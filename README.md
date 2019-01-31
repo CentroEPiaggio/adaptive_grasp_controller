@@ -35,6 +35,8 @@ This controller has been coded in the form of a ROS service. Most of the paramet
 
 ## Running the Adaptive Grasp
 
+### Main files to be launched
+
 Roslaunch the launch files for the robot and the controller service as follows:
 
 ```
@@ -65,7 +67,7 @@ This will make the robot start to close the hand and whenever a touch is found b
 
 ### Trying the Adaptive Grasp without the IMU Glove
 
-The adaptive grasp can still be tried on the robot without an acutal touch sensing device (IMU Glove) through publishing touches manually.
+The Adaptive Grasp can still be tried on the robot without an acutal touch sensing device (*IMU Glove*) through publishing touches manually.
 It is enough to publish the id of the finger, that we suppose touches the object, to the topic `/finger_touching_topic`.
 
 The ids of the fingers are 1 for thumb, 2 for index, 3 for middle, 4 for ring, and 5 for little.
@@ -84,10 +86,13 @@ When the Adaptive Grasp Controller service has been called and the SoftHand star
 rostopic pub -r 10 /touching_finger_topic std_msgs/Int8 "data: 1"
 ```
 
-## Yet to be implemented (Force/Torque sensor on the wrist)
-The adaptive motion must stop obviously if a big force/torque is sensed on the force/torque sensor on the wrist of the *KUKA*. This can be done easily by adding an if condition in the function `void AdaptiveGraspController::stopArmWhenCollision` in the file `AdaptiveGraspController.cpp` where the function `cancelGoal()` is called.
+## Yet to be implemented 
 
-## To be changed in later versions
+### Force/Torque sensor on the wrist
+
+The Adaptive motion must stop obviously if a big force/torque is sensed on the force/torque sensor on the wrist of the *KUKA*. This can be done easily by adding an if condition in the function `void AdaptiveGraspController::stopArmWhenCollision` in the file `AdaptiveGraspController.cpp` where the function `cancelGoal()` is called.
+
+### To be changed in later versions
 - Replace arrays whith std::vectors
 - Compute more precisely the values of the joints of a finger from the value of synergy
 
