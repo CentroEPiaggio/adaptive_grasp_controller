@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<package>
+  <name>adaptive_grasp_controller</name>
+  <version>0.0.0</version>
+  <description>The adaptive_grasp_controller package is a package that contains servified versions of the adaptive controller to be integrated in the SOMA Planner.</description>
+
+  <maintainer email="mathewjose.pollayil@phd.unipi.it">Mathew Jose Pollayil</maintainer>
+ 
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>rviz</build_depend>
+  <build_depend>rviz_visual_tools</build_depend>
+  <build_depend>actionlib_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>moveit_msgs</build_depend>
+  <build_depend>moveit_core</build_depend>
+  <build_depend>moveit_ros_planning_interface</build_depend>
+  <build_depend>moveit_ros_perception</build_depend>
+  <build_depend>interactive_markers</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+  <build_depend>qb_interface</build_depend>
+  <run_depend>actionlib_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>visualization_msgs</run_depend>
+  <run_depend>interactive_markers</run_depend>
+  <run_depend>moveit_msgs</run_depend>
+  <run_depend>moveit_core</run_depend>
+  <run_depend>moveit_ros_planning_interface</run_depend>
+  <run_depend>moveit_ros_perception</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>qb_interface</run_depend>
+
+  <export>
+
+  </export>
+</package>

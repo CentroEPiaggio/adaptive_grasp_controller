@@ -1,0 +1,19 @@
+# Parameters for imu grasp controller
+# Remember that there can be other important constants that can only be changed from the src code.
+
+imu_grasp_controller:
+  ARM_NAME: right_arm                       # Name of the arm (namespace of arm joint_trajectory_controller)
+  MOVEIT_GROUP: full_lwr                    # Name of the MoveIt! MoveGroup of the arm, as in srdf
+  HAND_NAME: right_hand                     # Name of the hand (namespace of hand joint_trajectory_controller)
+  HAND_JOINT: right_hand_synergy_joint      # Name of the hand joint
+  IMU_TOPIC: touching_finger_topic          # Topic from which id of finger in collision is recieved from IMU Glove
+  N_WP: 60                                  # Number of waypoints
+  CONTROL_DELAY: 40000                      # Microseconds of delay between hand and arm controllers in enclosing
+  MAX_SYNERGY: 1.00                         # Maximum synergy of IMU SoftHand -> Please change JOINTS_CLOSED, THUMB_CLOSED and abd_closed in src code too
+  CLOSE_TIME: 5000                          # Time in which the SoftHand closes totally
+  N_WP_CLOSE: 150                           # Number of trajectory points of the slow hand closing
+  HAND_TIMEOUT: 7.0                         # Hand closing timeout after which, if no collision, go on
+  SLEEP_FOR_MOVE: 4.0                       # Sleep to do at least a bit of compensation movement even if other finger touches
+  SKIP_TRAJ_DELAY: 50                       # Delay in ms to avoid "first trajectory before current time" in first hand close
+  COMPENS_PERC: 30                          # Percentage of the compensation motion to be effectively given to the robot
+  USE_SIGNATURE: 0                          # 0 for using closure signature axis, 1 otherwise

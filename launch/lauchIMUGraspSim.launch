@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- Launch arguments -->
+	<arg name="adaptive_grasp_config" default="$(find adaptive_grasp_controller)/configs/imu_grasp_config.yaml"/>
+
+	<!-- Loading config file to param server -->
+	<rosparam command="load" file="$(arg adaptive_grasp_config)"/>
+
+	<!-- Load main node -->
+  	<node name="adaptive_grasp_controller" pkg="adaptive_grasp_controller" type="adaptive_grasp_controller" output="screen"/>
+
+</launch>
