@@ -41,5 +41,5 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS} /usr/include/eigen3)
 
-add_executable(adaptive_grasp_controller src/IMUGraspController.cpp)
+add_executable(adaptive_grasp_controller src/AdaptiveGraspController.cpp)
 target_link_libraries(adaptive_grasp_controller ${catkin_LIBRARIES} ${ROS_LIBRARIES}) 

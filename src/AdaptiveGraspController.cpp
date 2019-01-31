@@ -7,7 +7,7 @@
 #include <chrono>
 #include <thread>
 
-#include "IMUGraspController.h"
+#include "AdaptiveGraspController.h"
 #include <tf/transform_listener.h>
 #include <eigen_conversions/eigen_msg.h>
 #include <std_msgs/Float64.h>
@@ -33,7 +33,7 @@
 
 #include <geometry_msgs/Twist.h>
 
-#define DEBUG 	1					// Prints out additional info if 1
+#define DEBUG 				0					// Prints out additional info if 1
 #define DEBUG_VISUAL 		0					// Publishes additional stuff to RViz
 
 using namespace std;
