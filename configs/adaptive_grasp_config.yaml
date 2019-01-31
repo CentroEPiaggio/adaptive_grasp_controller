@@ -1,7 +1,7 @@
 # Parameters for imu grasp controller
 # Remember that there can be other important constants that can only be changed from the src code.
 
-imu_grasp_controller:
+adaptive_grasp_controller:
   ARM_NAME: right_arm                       # Name of the arm (namespace of arm joint_trajectory_controller)
   MOVEIT_GROUP: full_lwr                    # Name of the MoveIt! MoveGroup of the arm, as in srdf
   HAND_NAME: right_hand                     # Name of the hand (namespace of hand joint_trajectory_controller)

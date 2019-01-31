@@ -2,7 +2,7 @@
 <launch>
 
 	<!-- Launch arguments -->
-	<arg name="adaptive_grasp_config" default="$(find adaptive_grasp_controller)/configs/imu_grasp_config.yaml"/>
+	<arg name="adaptive_grasp_config" default="$(find adaptive_grasp_controller)/configs/adaptive_grasp_config.yaml"/>
 
 	<!-- Loading config file to param server -->
 	<rosparam command="load" file="$(arg adaptive_grasp_config)"/>

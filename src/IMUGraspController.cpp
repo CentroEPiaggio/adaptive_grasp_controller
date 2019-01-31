@@ -662,77 +662,77 @@ void IMUGraspControllerCaller::sendJointTrajectory(trajectory_msgs::JointTraject
 bool IMUGraspControllerCaller::getParamsOfYaml(){
 	bool success = true;
 
-	if(!ros::param::get("/imu_grasp_controller/ARM_NAME", ARM_NAME)){
+	if(!ros::param::get("/adaptive_grasp_controller/ARM_NAME", ARM_NAME)){
 		ROS_WARN("ARM_NAME param not found in param server! Using default.");
 		ARM_NAME = "right_arm";
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/MOVEIT_GROUP", MOVEIT_GROUP)){
+	if(!ros::param::get("/adaptive_grasp_controller/MOVEIT_GROUP", MOVEIT_GROUP)){
 		ROS_WARN("MOVEIT_GROUP param not found in param server! Using default.");
 		MOVEIT_GROUP = "full_lwr";
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/HAND_NAME", HAND_NAME)){
+	if(!ros::param::get("/adaptive_grasp_controller/HAND_NAME", HAND_NAME)){
 		ROS_WARN("HAND_NAME param not found in param server! Using default.");
 		HAND_NAME = "right_hand";
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/HAND_JOINT", HAND_JOINT)){
+	if(!ros::param::get("/adaptive_grasp_controller/HAND_JOINT", HAND_JOINT)){
 		ROS_WARN("HAND_JOINT param not found in param server! Using default.");
 		HAND_JOINT = "right_hand_synergy_joint";
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/IMU_TOPIC", IMU_TOPIC)){
+	if(!ros::param::get("/adaptive_grasp_controller/IMU_TOPIC", IMU_TOPIC)){
 		ROS_WARN("IMU_TOPIC param not found in param server! Using default.");
 		IMU_TOPIC = "touching_finger_topic";
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/N_WP", N_WP)){
+	if(!ros::param::get("/adaptive_grasp_controller/N_WP", N_WP)){
 		ROS_WARN("N_WP param not found in param server! Using default.");
 		N_WP = 20;
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/CONTROL_DELAY", CONTROL_DELAY)){
+	if(!ros::param::get("/adaptive_grasp_controller/CONTROL_DELAY", CONTROL_DELAY)){
 		ROS_WARN("CONTROL_DELAY param not found in param server! Using default.");
 		CONTROL_DELAY = 40000;
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/MAX_SYNERGY", MAX_SYNERGY)){
+	if(!ros::param::get("/adaptive_grasp_controller/MAX_SYNERGY", MAX_SYNERGY)){
 		ROS_WARN("MAX_SYNERGY param not found in param server! Using default.");
 		MAX_SYNERGY = 1.00;
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/CLOSE_TIME", CLOSE_TIME)){
+	if(!ros::param::get("/adaptive_grasp_controller/CLOSE_TIME", CLOSE_TIME)){
 		ROS_WARN("CLOSE_TIME param not found in param server! Using default.");
 		CLOSE_TIME = 7000;
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/N_WP_CLOSE", N_WP_CLOSE)){
+	if(!ros::param::get("/adaptive_grasp_controller/N_WP_CLOSE", N_WP_CLOSE)){
 		ROS_WARN("N_WP_CLOSE param not found in param server! Using default.");
 		N_WP_CLOSE = 60;
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/HAND_TIMEOUT", HAND_TIMEOUT)){
+	if(!ros::param::get("/adaptive_grasp_controller/HAND_TIMEOUT", HAND_TIMEOUT)){
 		ROS_WARN("HAND_TIMEOUT param not found in param server! Using default.");
 		HAND_TIMEOUT = 7.0;
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/SLEEP_FOR_MOVE", SLEEP_FOR_MOVE)){
+	if(!ros::param::get("/adaptive_grasp_controller/SLEEP_FOR_MOVE", SLEEP_FOR_MOVE)){
 		ROS_WARN("SLEEP_FOR_MOVE param not found in param server! Using default.");
 		SLEEP_FOR_MOVE = 2.0;
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/SKIP_TRAJ_DELAY", SKIP_TRAJ_DELAY)){
+	if(!ros::param::get("/adaptive_grasp_controller/SKIP_TRAJ_DELAY", SKIP_TRAJ_DELAY)){
 		ROS_WARN("SKIP_TRAJ_DELAY param not found in param server! Using default.");
 		SKIP_TRAJ_DELAY = 50;
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/COMPENS_PERC", COMPENS_PERC)){
+	if(!ros::param::get("/adaptive_grasp_controller/COMPENS_PERC", COMPENS_PERC)){
 		ROS_WARN("COMPENS_PERC param not found in param server! Using default.");
 		COMPENS_PERC = 50;
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/USE_SIGNATURE", USE_SIGNATURE)){
+	if(!ros::param::get("/adaptive_grasp_controller/USE_SIGNATURE", USE_SIGNATURE)){
 		ROS_WARN("USE_SIGNATURE param not found in param server! Using default.");
 		USE_SIGNATURE = 0;
 		success = false;
