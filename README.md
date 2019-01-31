@@ -31,7 +31,7 @@ To install this package just clone this and the other needed packages into your 
 
 This controller has been coded in the form of a ROS service. Most of the parameters of the Adaptive Grasp can be changed from the `adaptive_grasp_config.yaml` file which is already loaded by the `launchAdaptiveGraspSim.launch` launch file. A short description of each parameter is given in the yaml file itself.
 
-N.B: A proper and synced functioning of the Adaptive IMU Grasping depends highly on the specifications of the used system (thus on a smooth functioning of the SoftHand and KUKA hardware interface for ROS).
+**N.B.** A proper and synced functioning of the Adaptive IMU Grasping depends highly on the specifications of the used system (thus on a smooth functioning of the *SoftHand* and *KUKA* hardware interface for ROS).
 
 ## Running the Adaptive Grasp
 
@@ -39,7 +39,6 @@ Roslaunch the launch files for the robot and the controller service as follows:
 
 ```
 roslaunch adaptive_grasp_controller launchLWRSoftHandJointTraj.launch
-
 roslaunch adaptive_grasp_controller launchAdaptiveGraspSim.launch
 ```
 
@@ -51,7 +50,6 @@ Here we suppose that the robot is already in a grasp pose above the object to be
 
 ```
 rosrun finger_fk finger_fk_main.py
-
 roslaunch imu_glove_finger_touch_utils launchCollisionIdentification.launch
 ```
 
@@ -87,7 +85,7 @@ rostopic pub -r 10 /touching_finger_topic std_msgs/Int8 "data: 1"
 ```
 
 ## Yet to be implemented (Force/Torque sensor on the wrist)
-The compensating motion must stop obviously if a big force/torque is sensed on the force/torque sensor on the wrist of the KUKA. This can be done easily by adding an if condition in the function `void IMUGraspController::stopArmWhenCollision` in the file `IMUGraspController.cpp` where the function `cancelGoal()` is called.
+The adaptive motion must stop obviously if a big force/torque is sensed on the force/torque sensor on the wrist of the *KUKA*. This can be done easily by adding an if condition in the function `void AdaptiveGraspController::stopArmWhenCollision` in the file `AdaptiveGraspController.cpp` where the function `cancelGoal()` is called.
 
 ## To be changed in later versions
 - Replace arrays whith std::vectors
