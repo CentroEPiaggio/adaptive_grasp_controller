@@ -178,21 +178,74 @@ void AdaptiveGraspControllerCaller::performMotionPlan() {
 	// Publishing waypoints to RViz
 	if(DEBUG_VISUAL) publishStuff(cart_waypoints);
 
+	// Some additional parameters for MoveIt
+	group.setPlanningTime(5.0);
+	group.setPlannerId("RRTConnectkConfigDefault"); // RRTstarkConfigDefault
+
 	// Planning for the waypoints path
 	moveit_msgs::RobotTrajectory trajectory;
 	double fraction = group.computeCartesianPath(cart_waypoints, 0.01, 0.0, trajectory);
 
 	ROS_INFO("Plan (cartesian path) (%.2f%% acheived)", fraction * 100.0);
 
-	// Setting current_fraction for using it later on sending partial trajectory to arm
-	current_fraction = fraction;
+	if(fraction > 0) {
+		// Setting current_fraction for using it later on sending partial trajectory to arm
+		current_fraction = fraction;
 
-	if(fraction != 1.0) cout << "FOUND ONLY PARTIAL PLAN FOR ENCLOSING HAND AND ARM MOTION!!!" << endl; // return;
-	else cout << "FOUND COMPLETE PLAN FOR ENCLOSING HAND AND ARM MOTION!!!" << endl;
+		if(fraction != 1.0) cout << "FOUND ONLY PARTIAL PLAN FOR ENCLOSING HAND AND ARM MOTION!!!" << endl; // return;
+		else cout << "FOUND COMPLETE PLAN FOR ENCLOSING HAND AND ARM MOTION!!!" << endl;
 
-	// Send the trajectory to the robot
-	sendJointTrajectory(trajectory.joint_trajectory);
-	cout << "Sent trajectory to Hand and Arm Joint Trajectory Controller!" << endl;
+		// Send the trajectory to the robot
+		sendJointTrajectory(trajectory.joint_trajectory);
+		cout << "Sent trajectory to Hand and Arm Joint Trajectory Controller!" << endl;
+	}
+	else {
+		cout << "Motion Plan not found, just closing the hand!" << endl;
+		closeHandFromCurrentPosition();
+	}
+}
+
+/* ******************************************************************************************** */
+void AdaptiveGraspControllerCaller::closeHandFromCurrentPosition() {
+	auto nanosecond = ros::Duration(0, 1);
+    auto millisecond = ros::Duration(0, 1000000);
+
+	// Getting current hand synergy state
+	sensor_msgs::JointState::ConstPtr hand_joint_state = 
+		ros::topic::waitForMessage<sensor_msgs::JointState>("/joint_states", n);
+	
+	if (!hand_joint_state) {
+		ROS_ERROR("Hand joint states not received!!! \n");
+	}
+
+	double synergy_position = 
+		hand_joint_state->position[find (hand_joint_state->name.begin(),hand_joint_state->name.end(), 
+			string(HAND_JOINT)) - hand_joint_state->name.begin()];
+
+	// How much snynergy can be incremented form current synergy to close hand completely
+	double remaining_synergy = double(MAX_SYNERGY) - synergy_position;
+
+	 // Plan trajectory
+    trajectory_msgs::JointTrajectory traj;
+    traj.joint_names.push_back(HAND_JOINT);
+    // Delay in ms to avoid "first trajectory before current time" in first hand close
+    traj.header.stamp = ros::Time::now() + ros::Duration(0, int (SKIP_TRAJ_DELAY) * 1000000);
+
+    // Pushing back trajectory points to slow down the hand closing
+    int time_increment = floor(CLOSE_TIME / N_WP_CLOSE);
+	
+	
+	for(int i = 1; i <= N_WP_CLOSE; i++){
+    	double hand_frac = (double (i)) / (double (N_WP_CLOSE));
+    	// velocity has to be 0!!!!!!!!!!!!
+    	traj.points.push_back(gen_point(synergy_position + remaining_synergy * hand_frac, 0.0, 
+    		millisecond * (CLOSE_TIME - (N_WP_CLOSE - i) * time_increment) + nanosecond));
+    	if(DEBUG) cout << "THE HAND REFERENCES GIVEN TO CONTROLLER ARE " << synergy_position + remaining_synergy * hand_frac << endl;
+    }
+
+	control_msgs::FollowJointTrajectoryGoal goal;
+    goal.trajectory = traj;
+    move_->sendGoal(goal);
 }
 
 /* ******************************************************************************************** */

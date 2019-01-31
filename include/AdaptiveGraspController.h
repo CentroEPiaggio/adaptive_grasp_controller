@@ -133,6 +133,9 @@ class AdaptiveGraspControllerCaller {
 		// Performs motion planning and sends trajectory to the joint_trajectory_controller
 		void performMotionPlan();
 
+		// To close hand if MoveIt does not find any solution
+		void closeHandFromCurrentPosition();
+
 		// Gets finger joint states (first one returns thumb joints and the second one of other fingers)
 		void getFingerJointStates(float finger_positions_a[], float finger_positions_b[]);
 
