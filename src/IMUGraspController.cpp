@@ -39,7 +39,7 @@
 using namespace std;
 
 
-IMUGraspControllerCaller::IMUGraspControllerCaller(ros::NodeHandle& nh):n(nh){
+AdaptiveGraspControllerCaller::AdaptiveGraspControllerCaller(ros::NodeHandle& nh):n(nh){
 	if(!visual_tools_){
 		std::cout << "RVIZ: Resetting Visual Tools!!!" << std::endl;
 		visual_tools_.reset(new rviz_visual_tools::RvizVisualTools("world","/rviz_visual_markers"));
@@ -52,7 +52,7 @@ void fingerColCallback(const std_msgs::Int8::ConstPtr& msg){
 }
 
 /* ******************************************************************************************** */
-int IMUGraspControllerCaller::startClosingHand(){
+int AdaptiveGraspControllerCaller::startClosingHand(){
 	ROS_INFO("Starting to close hand!\n");
 
 	// Starting to close the hand
@@ -91,7 +91,7 @@ int IMUGraspControllerCaller::startClosingHand(){
 }
 
 /* ******************************************************************************************* */
-trajectory_msgs::JointTrajectoryPoint IMUGraspControllerCaller::gen_point(double position, double velocity,
+trajectory_msgs::JointTrajectoryPoint AdaptiveGraspControllerCaller::gen_point(double position, double velocity,
                                                               ros::Duration t){
     trajectory_msgs::JointTrajectoryPoint p;
     p.positions.push_back(position);
@@ -101,7 +101,7 @@ trajectory_msgs::JointTrajectoryPoint IMUGraspControllerCaller::gen_point(double
 }
 
 /* ******************************************************************************************* */
-control_msgs::FollowJointTrajectoryGoal IMUGraspControllerCaller::create_trajectory_goal(double position){
+control_msgs::FollowJointTrajectoryGoal AdaptiveGraspControllerCaller::create_trajectory_goal(double position){
     auto nanosecond = ros::Duration(0, 1);
     auto millisecond = ros::Duration(0, 1000000);
 
@@ -128,7 +128,7 @@ control_msgs::FollowJointTrajectoryGoal IMUGraspControllerCaller::create_traject
 }
 
 /* ******************************************************************************************* */
-void IMUGraspControllerCaller::send_goal(double position){
+void AdaptiveGraspControllerCaller::send_goal(double position){
     // Check whether the server is available
     if (move_->waitForServer(ros::Duration(1,0))){
     	// Create goal and send it to the controller
@@ -141,7 +141,7 @@ void IMUGraspControllerCaller::send_goal(double position){
 }
 
 /* ******************************************************************************************* */
-void IMUGraspControllerCaller::sendHandTrajectory(double increment){
+void AdaptiveGraspControllerCaller::sendHandTrajectory(double increment){
   	if (increment > 1.0) increment = 1.0;
   	else if (increment < 0.0) increment = 0.0;
 
@@ -149,7 +149,7 @@ void IMUGraspControllerCaller::sendHandTrajectory(double increment){
 }
 
 /* ******************************************************************************************** */
-void IMUGraspControllerCaller::performMotionPlan() {
+void AdaptiveGraspControllerCaller::performMotionPlan() {
 	// Create the monitor
 	if(DEBUG) cout << "Initializing planning scene monitor" << endl;
 	boost::shared_ptr<tf::TransformListener> tf(new tf::TransformListener());
@@ -196,7 +196,7 @@ void IMUGraspControllerCaller::performMotionPlan() {
 }
 
 /* ******************************************************************************************** */
-void IMUGraspControllerCaller::getFingerJointStates(float finger_positions_a[], float finger_positions_b[]) {
+void AdaptiveGraspControllerCaller::getFingerJointStates(float finger_positions_a[], float finger_positions_b[]) {
 	sensor_msgs::JointState::ConstPtr finger_joint_state =
 		ros::topic::waitForMessage<sensor_msgs::JointState>("/joint_states", n);
 		// ros::topic::waitForMessage<sensor_msgs::JointState>("/" + string(HAND_NAME) + "/joint_states", n);
@@ -247,28 +247,28 @@ void IMUGraspControllerCaller::getFingerJointStates(float finger_positions_a[], 
 }
 
 /* ******************************************************************************************** */
-void IMUGraspControllerCaller::substractArrays(float a[], float b[], float res[], int size) {
+void AdaptiveGraspControllerCaller::substractArrays(float a[], float b[], float res[], int size) {
 	for (int i = 0; i < size; i++) {
 		res[i] = a[i] - b[i];
 	}
 }
 
 /* ******************************************************************************************** */
-void IMUGraspControllerCaller::addArrays(float a[], float b[], float res[], int size) {
+void AdaptiveGraspControllerCaller::addArrays(float a[], float b[], float res[], int size) {
 	for (int i = 0; i < size; i++) {
 		res[i] = a[i] + b[i];
 	}
 }
 
 /* ******************************************************************************************** */
-void IMUGraspControllerCaller::divideArray(float a[], int size) {
+void AdaptiveGraspControllerCaller::divideArray(float a[], int size) {
 	for (int i = 0; i < size; i++) {
 		a[i] = a[i] / float (N_WP);
 	}
 }
 
 /* ******************************************************************************************** */
-void IMUGraspControllerCaller::computeWaypointsFromPoses(string finger_name,
+void AdaptiveGraspControllerCaller::computeWaypointsFromPoses(string finger_name,
 	const Eigen::Affine3d& fing_pose, vector<geometry_msgs::Pose>& waypoints){
 	// Compute waypoints
 	// Listening transform from ee to palm
@@ -452,7 +452,7 @@ void IMUGraspControllerCaller::computeWaypointsFromPoses(string finger_name,
 }
 
 /* ******************************************************************************************* */
-Eigen::Affine3d IMUGraspControllerCaller::waypoint_signature(Eigen::Affine3d fing_pose, Eigen::Affine3d p2f_eigen, Eigen::Affine3d palmeeAff, Eigen::Vector3d signature_axis){
+Eigen::Affine3d AdaptiveGraspControllerCaller::waypoint_signature(Eigen::Affine3d fing_pose, Eigen::Affine3d p2f_eigen, Eigen::Affine3d palmeeAff, Eigen::Vector3d signature_axis){
 	// Getting axis angle parametrization of finger to palm transform
 	// Eigen::Affine3d f2p_eigen = p2f_eigen.inverse();
 	// Eigen::AngleAxisd newAngleAxis(f2p_eigen.linear());
@@ -497,7 +497,7 @@ Eigen::Affine3d IMUGraspControllerCaller::waypoint_signature(Eigen::Affine3d fin
 
 
 /* ******************************************************************************************* */
-void IMUGraspControllerCaller::sendHandTrajectoryWithTiming(double increment, trajectory_msgs::JointTrajectory ext_trajectory){
+void AdaptiveGraspControllerCaller::sendHandTrajectoryWithTiming(double increment, trajectory_msgs::JointTrajectory ext_trajectory){
   	// SoftHand synergy (increment) must be in [0, 1]
   	if (increment > 1.0) increment = 1.0;
   	else if (increment < 0.0) increment = 0.0;
@@ -558,7 +558,7 @@ void IMUGraspControllerCaller::sendHandTrajectoryWithTiming(double increment, tr
 }
 
 /* ******************************************************************************************** */
-void IMUGraspControllerCaller::stopArmWhenCollision(actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> *arm_joint_client){
+void AdaptiveGraspControllerCaller::stopArmWhenCollision(actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> *arm_joint_client){
 	ROS_INFO("I'm listening for further finger collisions or arm collision!\n");
 
 	// Some needed data
@@ -602,7 +602,7 @@ void IMUGraspControllerCaller::stopArmWhenCollision(actionlib::SimpleActionClien
 }
 
 /* ******************************************************************************************** */
-void IMUGraspControllerCaller::sendJointTrajectory(trajectory_msgs::JointTrajectory trajectory) {
+void AdaptiveGraspControllerCaller::sendJointTrajectory(trajectory_msgs::JointTrajectory trajectory) {
 	// Create the action client for the arm
 	joint_client = new actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>("/" + string(ARM_NAME) + "/joint_trajectory_controller/follow_joint_trajectory/", true);
 
@@ -659,7 +659,7 @@ void IMUGraspControllerCaller::sendJointTrajectory(trajectory_msgs::JointTraject
 
 /* ******************************************************************************************** */
 /* Gets from the parameter server the values of the needed vars loaded from config_col.yaml */
-bool IMUGraspControllerCaller::getParamsOfYaml(){
+bool AdaptiveGraspControllerCaller::getParamsOfYaml(){
 	bool success = true;
 
 	if(!ros::param::get("/adaptive_grasp_controller/ARM_NAME", ARM_NAME)){
@@ -742,7 +742,7 @@ bool IMUGraspControllerCaller::getParamsOfYaml(){
 }
 
 /* ******************************************************************************************** */
-void IMUGraspControllerCaller::publishStuff(const std::vector<geometry_msgs::Pose>& pose_msgs){
+void AdaptiveGraspControllerCaller::publishStuff(const std::vector<geometry_msgs::Pose>& pose_msgs){
 	for(auto& pose:pose_msgs){
 		visual_tools_->publishAxis(pose);
 		ros::Duration(0.1).sleep();
@@ -750,7 +750,7 @@ void IMUGraspControllerCaller::publishStuff(const std::vector<geometry_msgs::Pos
 }
 
 /* ******************************************************************************************** */
-bool IMUGraspControllerCaller::call_imu_grasp_controller(controllers_servify::imu_controller::Request &req, controllers_servify::imu_controller::Response &res) {
+bool AdaptiveGraspControllerCaller::call_adaptive_grasp_controller(adaptive_grasp_controller::adaptive_controller::Request &req, adaptive_grasp_controller::adaptive_controller::Response &res) {
 	// Getting params from parameter server
 	if(!getParamsOfYaml()) ROS_WARN("Some params not loaded correctly!");
 
@@ -825,7 +825,7 @@ bool IMUGraspControllerCaller::call_imu_grasp_controller(controllers_servify::im
 
 	// Perform motion plan and sendJointCommand()
 	if(finger_id != 0) performMotionPlan();
-	else ROS_INFO_STREAM("THIS IS STRANGE: NO FINGER COLLISION WAS RECEIVED FROM IMU! SO THIS IS A SIMPLE SURFACE GRASP!");
+	else ROS_INFO_STREAM("THIS IS STRANGE: NO FINGER COLLISION WAS RECEIVED FROM IMUs! SO THIS IS A SIMPLE SURFACE GRASP!");
 }
 
 
@@ -839,9 +839,9 @@ int main(int argc, char **argv)
 
     ros::NodeHandle nh_;
 
-    IMUGraspControllerCaller imu_grasp_controller_caller(nh_);
+    AdaptiveGraspControllerCaller adaptive_grasp_controller_caller(nh_);
 
-    ros::ServiceServer service = nh_.advertiseService("adaptive_grasp_controller", &IMUGraspControllerCaller::call_imu_grasp_controller, &imu_grasp_controller_caller);
+    ros::ServiceServer service = nh_.advertiseService("adaptive_grasp_controller", &AdaptiveGraspControllerCaller::call_adaptive_grasp_controller, &adaptive_grasp_controller_caller);
 
     ros::Rate loop_rate(50);
 

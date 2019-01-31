@@ -13,7 +13,7 @@
 
 // Service Includes
 #include "finger_fk/FingerFkService.h"
-#include "controllers_servify/imu_controller.h"
+#include "adaptive_grasp_controller/adaptive_controller.h"
 
 // MoveIt!
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
@@ -50,7 +50,7 @@ std::string IMU_TOPIC; 												// Topic from which id of finger in collision
 
 int N_WP; 															// Number of waypoints
 int CONTROL_DELAY; 													// Microseconds of delay between hand and arm controllers in enclosing
-float MAX_SYNERGY; 													// Maximum synergy of IMU SoftHand
+float MAX_SYNERGY; 													// Maximum synergy of SoftHand
 int CLOSE_TIME; 													// Time in which the SoftHand closes totally
 int N_WP_CLOSE; 													// Number of trajectory points of the slow hand closing
 double HAND_TIMEOUT; 												// Hand closing timeout after which, if no collision, go on
@@ -64,9 +64,9 @@ double current_fraction = 0.0;										// Fraction of compensation motion achie
 ros::Time arm_motion_start;											// Time at which arm motion starts
 
 
-// CLASS FOR THE IMUGRASPCONTROLLER
+// CLASS FOR THE ADAPTIVEGRASPCONTROLLER
 
-class IMUGraspControllerCaller {
+class AdaptiveGraspControllerCaller {
 
 	/// private variables -------------------------------------------------------------------------
 	private:
@@ -93,18 +93,18 @@ class IMUGraspControllerCaller {
 	  	// Subscribing to handle finger collision
 		ros::Subscriber finger_col_sub;
 		// Creating a ROS publisher for sending the trajectory to external node for WAM robot
-		ros::Publisher pub_traj_to_topic = n.advertise<trajectory_msgs::JointTrajectory>("from_imu_grasp_servify", 1);
+		ros::Publisher pub_traj_to_topic = n.advertise<trajectory_msgs::JointTrajectory>("from_adaptive_grasp_controller", 1);
 		// RViz visual tools
 		rviz_visual_tools::RvizVisualToolsPtr visual_tools_;
 
 	/// public typedefs ---------------------------------------------------------------------------
 	public:
-	  	typedef boost::shared_ptr<IMUGraspControllerCaller> Ptr;
-	  	typedef boost::shared_ptr<const IMUGraspControllerCaller> ConstPtr;
+	  	typedef boost::shared_ptr<AdaptiveGraspControllerCaller> Ptr;
+	  	typedef boost::shared_ptr<const AdaptiveGraspControllerCaller> ConstPtr;
 	  
 	/// public functions --------------------------------------------------------------------------
 	public:
-		IMUGraspControllerCaller(ros::NodeHandle& nh);
+		AdaptiveGraspControllerCaller(ros::NodeHandle& nh);
 
 	  	// Get parameters from parameter server
 	  	bool getParamsOfYaml();
@@ -113,9 +113,9 @@ class IMUGraspControllerCaller {
 	  	void publishStuff(const std::vector<geometry_msgs::Pose>& pose_msgs);
 
 	  	// Activate the controller for execution. This is the callback function of the controller service
-	  	bool call_imu_grasp_controller(controllers_servify::imu_controller::Request &req, controllers_servify::imu_controller::Response &res);
+	  	bool call_adaptive_grasp_controller(adaptive_grasp_controller::adaptive_controller::Request &req, adaptive_grasp_controller::adaptive_controller::Response &res);
 
-	  	// Starts closing SoftHand and listens for IMU events and stops eventually and returns the id of the touching finger
+	  	// Starts closing SoftHand and listens for touch events and stops eventually and returns the id of the touching finger
 		int startClosingHand();
 
 		// Pushes back position, velocity and duration to a JointTrajectoryPoint

@@ -26,7 +26,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 add_service_files(FILES
-  imu_controller.srv
+  adaptive_controller.srv
 )
 
 generate_messages(DEPENDENCIES

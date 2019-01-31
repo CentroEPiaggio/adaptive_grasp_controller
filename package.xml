@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>adaptive_grasp_controller</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>The adaptive_grasp_controller package is a package that contains servified versions of the adaptive controller to be integrated in the SOMA Planner.</description>
 
   <maintainer email="mathewjose.pollayil@phd.unipi.it">Mathew Jose Pollayil</maintainer>
