@@ -43,7 +43,7 @@
 		</include>
 
 		<!-- Spawn the full robot into Gazebo  -->
-    	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model $(arg robot_name) -param robot_description -J $(arg robot_name)::right_hand_synergy_joint 0.30  -J $(arg robot_name)::right_arm_a1_joint 0.40 -J $(arg robot_name)::right_arm_a2_joint -1.09 -J $(arg robot_name)::right_arm_a3_joint -1.59 -J $(arg robot_name)::right_arm_a4_joint -0.60 -J $(arg robot_name)::right_arm_a5_joint -0.25 -J $(arg robot_name)::right_arm_a6_joint 0.40 -J $(arg robot_name)::right_arm_e1_joint -0.29 -unpause"/>
+    	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model $(arg robot_name) -param robot_description -J $(arg robot_name)::right_hand_synergy_joint 0.00  -J $(arg robot_name)::right_arm_a1_joint 0.40 -J $(arg robot_name)::right_arm_a2_joint -1.09 -J $(arg robot_name)::right_arm_a3_joint -1.59 -J $(arg robot_name)::right_arm_a4_joint -0.60 -J $(arg robot_name)::right_arm_a5_joint -0.25 -J $(arg robot_name)::right_arm_a6_joint 0.40 -J $(arg robot_name)::right_arm_e1_joint -0.29 -unpause"/>
     </group>
 
 	<!-- Joint and robot state publishers of the full robot description -->
