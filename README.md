@@ -1,7 +1,7 @@
 # ADAPTIVE GRASP CONTROLLER
 
-This package implements the Adaptive Grasp Controller for the Pisa/IIT SoftHand. This controller is to be integrated in the SOMA Planner.
-In order to try this on a real robot, the IMU Glove for the Pisa/IIT SoftHand is required.
+This package implements the Adaptive Grasp Controller for the *Pisa/IIT SoftHand*. This controller is to be integrated in the SOMA Planner.
+In order to try this on a real robot, the *IMU Glove* for the *Pisa/IIT SoftHand* is required.
 
 Many topic names and joint names are still hard coded in the src code, so be careful when using this code with any robot. This needs to be changed later by parsing everything from a proper yaml file.
 
@@ -43,11 +43,11 @@ roslaunch adaptive_grasp_controller launchLWRSoftHandJointTraj.launch
 roslaunch adaptive_grasp_controller launchAdaptiveGraspSim.launch
 ```
 
-The first file launches a KUKA LWR 4+ robot with a Pisa/IIT SoftHand mounted on it. Please make sure that the args right_arm_enabled and right_hand_enabled are set correctly: these args should be set to true in case of a real robot launch and should be set to false for simulations in Gazebo.
+The first file launches a *KUKA LWR 4+* robot with a *Pisa/IIT SoftHand* mounted on it. Please make sure that the args `right_arm_enabled` and `right_hand_enabled` are set correctly: these args should be set to `true` in case of a real robot launch (in this case the arg `use_gazebo` must be set to `false`) and should be set to `false` for simulations in Gazebo (obviously now the arg `use_gazebo` must be set to `true`).
 
 ### Trying the Adaptive Grasp with the IMU Glove
 
-For doing experiments using the IMU Glove, the `finger_fk` service and the `collision_identification` node need to be running.
+Here we suppose that the robot is already in a grasp pose above the object to be grabbed. In order to do experiments using the IMU Glove, the `finger_fk` service node and the `collision_identification` node need to be running. 
 
 ```
 rosrun finger_fk finger_fk_main.py
@@ -55,7 +55,15 @@ rosrun finger_fk finger_fk_main.py
 roslaunch imu_glove_finger_touch_utils launchCollisionIdentification.launch
 ```
 
-or include both in one of your launch files. Remember that the latter starts also the also the `qb_interface_imu` node.
+For running the `finger_fk` service it is also sufficient to set the arg `use_other_utils` is set to true. However the `collision_identification` node need to be launched separately so that it does not crash. Remember that the latter starts also the `qb_interface_imu` node. 
+
+Then call the Adaptive Grasp service by typing in a new terminal window the following:
+
+```
+rosservice call /adaptive_grasp_controller "goal: 0.0"
+```
+
+This will make the robot start to close the hand and whenever a touch is found by the `collision_identification` node the id of the finger in collision will be published to the topic `/finger_touching_topic`. This will cause a change in the grasping strategy (For more, refer to the paper).
 
 ### Trying the Adaptive Grasp without the IMU Glove
 
