@@ -5,7 +5,7 @@ In order to try this on a real robot, the IMU Glove for the Pisa/IIT SoftHand is
 
 Many topic names and joint names are still hard coded in the src code, so be careful when using this code with any robot. This needs to be changed later by parsing everything from a proper yaml file.
 
-## Authors
+#### Authors
 
 * **George Jose Pollayil** - [gpollayil](https://github.com/gpollayil)
 * **Mathew Jose Pollayil** - [mpollayil](https://github.com/mpollayil)
@@ -14,13 +14,12 @@ Many topic names and joint names are still hard coded in the src code, so be car
 
 ### Prerequisites
 
-This package depends on ROS Indigo or newer.
-
+This package is tested to work on Ubuntu 14.04 with ROS Indigo.
 To build the Adaptive Grasp Controller, it is necessary to have the following packages by Centro Piaggio:
 
 (UPDATE HERE)
 - finger_fk : https://github.com/CentroEPiaggio/finger_fk
-- imu_glove_finger_touch_utils : https://github.com/CentroEPiaggio/imu_glove_finger_touch_utils (ONLY FOR REAL ROBOT)
+- imu_glove_finger_touch_utils : https://github.com/CentroEPiaggio/imu_glove_finger_touch_utils 
 
 So please install them properly before.
 
@@ -32,7 +31,7 @@ To install this package just clone this and the other needed packages into your 
 
 This controller has been coded in the form of a ROS service. Most of the parameters of the Adaptive Grasp can be changed from the `adaptive_grasp_config.yaml` file which is already loaded by the `launchAdaptiveGraspSim.launch` launch file. A short description of each parameter is given in the yaml file itself.
 
-N.B: A proper and synced functioning of the Adaptive IMU Grasping depends highly on the SoftHand and KUKA hardware interface for ROS.
+N.B: A proper and synced functioning of the Adaptive IMU Grasping depends highly on the specifications of the used system (thus on a smooth functioning of the SoftHand and KUKA hardware interface for ROS).
 
 ## Running the Adaptive Grasp
 
@@ -40,8 +39,7 @@ Roslaunch the launch files for the robot and the controller service as follows:
 
 ```
 roslaunch adaptive_grasp_controller launchLWRSoftHandJointTraj.launch
-```
-```
+
 roslaunch adaptive_grasp_controller launchAdaptiveGraspSim.launch
 ```
 
@@ -53,14 +51,11 @@ For doing experiments using the IMU Glove, the `finger_fk` service and the `coll
 
 ```
 rosrun finger_fk finger_fk_main.py
-```
-```
+
 roslaunch imu_glove_finger_touch_utils launchCollisionIdentification.launch
 ```
 
 or include both in one of your launch files. Remember that the latter starts also the also the `qb_interface_imu` node.
-
-
 
 ### Trying the Adaptive Grasp without the IMU Glove
 
