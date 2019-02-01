@@ -2,6 +2,7 @@
 #include "ros/ros.h"
 #include <cstdlib>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/WrenchStamped.h>
 #include <ros/service.h>
 #include <tf/transform_listener.h>
 #include <Eigen/Dense>
@@ -58,6 +59,12 @@ double SLEEP_FOR_MOVE; 												// Sleep to do at least a bit of compensation
 int SKIP_TRAJ_DELAY; 												// Delay in ms to avoid "first trajectory before current time" in first hand close
 int COMPENS_PERC;													// Percentage of the compensation motion to be effectively given to the robot
 int USE_SIGNATURE;                       							// Int for using closure signature axis
+double diff_ft;														// The following are for the force/torque sensor
+geometry_msgs::WrenchStamped initial_ft;
+double FT_THRESHOLD;
+std::string FT_TOPIC;
+bool isFTFirstRead(true);
+
 
 int touching_finger = 0;											// For gradual closing and arm stopping
 double current_fraction = 0.0;										// Fraction of compensation motion achieved by MoveIt
@@ -139,6 +146,9 @@ class AdaptiveGraspControllerCaller {
 		// Gets finger joint states (first one returns thumb joints and the second one of other fingers)
 		void getFingerJointStates(float finger_positions_a[], float finger_positions_b[]);
 
+		/* Callback for FT topic subscriber */
+		void getFT(const geometry_msgs::WrenchStamped& curr_ft);
+
 		// Substract arrays
 		void substractArrays(float a[], float b[], float res[], int size);
 
@@ -152,7 +162,7 @@ class AdaptiveGraspControllerCaller {
 		void computeWaypointsFromPoses(std::string finger_name, 
 			const Eigen::Affine3d& fing_pose, std::vector<geometry_msgs::Pose>& waypoints);
 
-		// Use closure signature axis to modify rotation of compensatory motion
+		// Use closure signature axis to modify rotation of compensatory motion (INTEGRATION WITH CLOSURE SIGNATURE - yet to be finished)
 		Eigen::Affine3d waypoint_signature(Eigen::Affine3d fing_pose, Eigen::Affine3d p2f_eigen, 
 			Eigen::Affine3d palmeeAff, Eigen::Vector3d signature_axis);
 

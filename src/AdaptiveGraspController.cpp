@@ -485,7 +485,7 @@ void AdaptiveGraspControllerCaller::computeWaypointsFromPoses(string finger_name
 		// Defining signature axis here temporarily
 		Eigen::Vector3d signature_axis(0, 1, 0);
 
-		// Computing waypoints using traditional of new (signature) method
+		// Computing waypoints using traditional or new (signature) method (not done yet)
 		if(!USE_SIGNATURE){
 			wp_eigen = fing_pose * f2p_eigen * palmeeAff;
 		} else {
@@ -617,41 +617,54 @@ void AdaptiveGraspControllerCaller::stopArmWhenCollision(actionlib::SimpleAction
 	// Some needed data
 	int old_touching_finger = finger_id;
 
+	//ROS_WARN("I am going for a nap");
 	// Sleep for sometime for not having immediate other collision
-	sleep(SLEEP_FOR_MOVE);
+	// sleep(SLEEP_FOR_MOVE);
+	//ROS_WARN("AWAKE AWAKE AWAKE AWAKE");
 
 	bool first_print_out = true;
+	bool exitStopArmWhenCollisionLoop = false;
 
+	ros::Rate rate(100.0);
 	// Listening from finger collision topic and arm wrist force torque topic while executing compensating trajectory
-	// while(!arm_joint_client->waitForResult(ros::Duration(0, 10))) {
-	// 	ros::spinOnce();
+	while(!arm_joint_client->getState().isDone() && !exitStopArmWhenCollisionLoop) {
+	// while(!exitStopArmWhenCollisionLoop) {
 
-	// 	/*
-	// 	TODO: Add also a force/torque sensor condition for stopping the arm motion <<---
-	// 	e.g.: if(norm_wrench > threshold) arm_joint_client->cancelGoal();
-	// 	*/
+		ros::spinOnce();
+		// ROS_INFO("Difference F/T%f/n", diff_ft);
+		/* 
+		TODO: Add also a force/torque sensor condition for stopping the arm motion <<---
+		e.g.: if(norm_wrench > threshold) arm_joint_client->cancelGoal();
+		*/
+		if (diff_ft > FT_THRESHOLD) {
+			ROS_INFO("F/T THRESHOLD EXCEEDED, VALUE %f! STOPPING THE COMPENSATING ARM MOTION!\n", diff_ft);
+			arm_joint_client->cancelGoal();
+			//ros::spinOnce();
+			exitStopArmWhenCollisionLoop = true;
+		}
 
-	// 	// If the old finger is thumb, then stop if any other finger touches
-	// 	if (old_touching_finger == 1 && old_touching_finger == touching_finger) {
-	// 		if(first_print_out){
-	// 			ROS_INFO("No further finger collision received yet!\n");
-	// 			first_print_out = false;
-	// 		}
-	// 	} else if(old_touching_finger > 1 && touching_finger > 1) {
-	// 		if(first_print_out){
-	// 			ROS_INFO("No further relevant finger collision received yet!\n");
-	// 			first_print_out = false;
-	// 		}
-	// 	} else if(old_touching_finger == 0 || touching_finger == 0) {
-	// 		if(first_print_out){
-	// 			ROS_INFO("No finger collision received yet!\n");
-	// 			first_print_out = false;
-	// 		}
-	// 	} else {
-	// 		ROS_INFO("A FURTHER COLLISION DETECTED ON FINGER %d! STOPPING THE COMPENSATING ARM MOTION!\n", touching_finger);
-	// 		// arm_joint_client->cancelGoal();
-	// 	}
-	// }
+		// If the old finger is thumb, then stop if any other finger touches
+		if (old_touching_finger == 1 && old_touching_finger == touching_finger) {
+			if(first_print_out){
+				ROS_INFO("No further finger collision received yet!\n");
+				first_print_out = false;
+			}
+		} else if(old_touching_finger > 1 && touching_finger > 1) {
+			if(first_print_out){
+				ROS_INFO("No further relevant finger collision received yet!\n");
+				first_print_out = false;
+			}
+		} else if(old_touching_finger == 0 || touching_finger == 0) {
+			if(first_print_out){
+				ROS_INFO("No finger collision received yet!\n");
+				first_print_out = false;
+			}
+		} else {
+			ROS_INFO("A FURTHER COLLISION DETECTED ON FINGER %d! STOPPING THE COMPENSATING ARM MOTION!\n", touching_finger);
+			// arm_joint_client->cancelGoal();
+		}
+		rate.sleep();
+	}
 }
 
 /* ******************************************************************************************** */
@@ -707,6 +720,8 @@ void AdaptiveGraspControllerCaller::sendJointTrajectory(trajectory_msgs::JointTr
 		psm = NULL;
 	}
 
+	delete joint_client;
+
 	cout << "FINISHED EVERYTHING: TERMINATING CONTROLLER!" << endl;
 }
 
@@ -740,6 +755,11 @@ bool AdaptiveGraspControllerCaller::getParamsOfYaml(){
 		IMU_TOPIC = "touching_finger_topic";
 		success = false;
 	}
+	if(!ros::param::get("/imu_grasp_controller/FT_TOPIC", FT_TOPIC)){
+		ROS_WARN("FT_TOPIC param not found in param server! Using default.");
+		FT_TOPIC = "/ft_sensor";
+		success = false;
+	} 
 	if(!ros::param::get("/adaptive_grasp_controller/N_WP", N_WP)){
 		ROS_WARN("N_WP param not found in param server! Using default.");
 		N_WP = 20;
@@ -785,6 +805,11 @@ bool AdaptiveGraspControllerCaller::getParamsOfYaml(){
 		COMPENS_PERC = 50;
 		success = false;
 	}
+	if(!ros::param::get("/imu_grasp_controller/COMPENS_PERC", COMPENS_PERC)){
+		ROS_WARN("COMPENS_PERC param not found in param server! Using default.");
+		COMPENS_PERC = 50;
+		success = false;
+	}
 	if(!ros::param::get("/adaptive_grasp_controller/USE_SIGNATURE", USE_SIGNATURE)){
 		ROS_WARN("USE_SIGNATURE param not found in param server! Using default.");
 		USE_SIGNATURE = 0;
@@ -792,6 +817,15 @@ bool AdaptiveGraspControllerCaller::getParamsOfYaml(){
 	}
 
 	return success;
+}
+
+/* ******************************************************************************************** */
+void AdaptiveGraspControllerCaller::getFT(const geometry_msgs::WrenchStamped& curr_ft){	
+	if(isFTFirstRead) {
+		initial_ft = curr_ft;
+		isFTFirstRead = false;
+	}
+	diff_ft = sqrt(pow(curr_ft.wrench.force.x - initial_ft.wrench.force.x, 2) + pow(curr_ft.wrench.force.y - initial_ft.wrench.force.y, 2) + pow(curr_ft.wrench.force.z - initial_ft.wrench.force.z, 2));
 }
 
 /* ******************************************************************************************** */
