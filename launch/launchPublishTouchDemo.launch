@@ -7,8 +7,14 @@ N:B: change correctly the args passed to the node!
 
 <launch>
 
+	<!-- Launch arguments -->
+	<arg name="publish_touch_demo" default="$(find adaptive_grasp_controller)/configs/publish_touch_demo.yaml"/>
+
+	<!-- Loading config file to param server -->
+	<rosparam command="load" file="$(arg publish_touch_demo)"/>
+
 	<!-- Calling the publish_touch node -->
-	<node name="publish_touch_demo_node" pkg="adaptive_grasp_controller" type="publish_touch_demo_node" respawn="true" args="output_topic:=/touching_finger_topic" output="screen">
+	<node name="publish_touch_demo_node" pkg="adaptive_grasp_controller" type="publish_touch_demo_node" respawn="false" args="output_topic:=/touching_finger_topic" output="screen">
 	</node> 
 
 </launch>
