@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<!-- 
+PUBLISH TOUCH DEMO FOR SOMA ADAPTIVE GRAPS SIMULATION
+N:B: change correctly the args passed to the node!
+-->
+
+<launch>
+
+	<!-- Calling the publish_touch node -->
+	<node name="publish_touch_demo_node" pkg="adaptive_grasp_controller" type="publish_touch_demo_node" respawn="true" args="output_topic:=/touching_finger_topic" output="screen">
+	</node> 
+
+</launch>
