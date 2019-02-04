@@ -139,6 +139,7 @@ int main(int argc, char** argv){
         if(synergy_joint >= input_synergy_threshold){
 			if(first_time){
 				ROS_INFO_STREAM("Publishing the finger_id " << finger_id << " on the touch topic!");
+				first_time = false;
 			}
             pub_fing_id.publish(finger_id_msg);
         }
