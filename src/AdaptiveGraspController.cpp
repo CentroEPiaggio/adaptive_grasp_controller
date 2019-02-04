@@ -649,7 +649,7 @@ void AdaptiveGraspControllerCaller::stopArmWhenCollision(actionlib::SimpleAction
 				ROS_INFO("No further finger collision received yet!\n");
 				first_print_out = false;
 			}
-		} else if(old_touching_finger > 1 && touching_finger > 1) {
+		} else if(old_touching_finger > 1 && touching_finger > 1 && touching_finger <= 5) {
 			if(first_print_out){
 				ROS_INFO("No further relevant finger collision received yet!\n");
 				first_print_out = false;
