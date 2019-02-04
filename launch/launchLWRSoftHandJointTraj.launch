@@ -34,7 +34,7 @@
 	<group if="$(arg use_gazebo)">
 		<!-- Load Gazebo simulation environment -->
     	<include file="$(find gazebo_ros)/launch/empty_world.launch">
-    	    <arg name="world_name" value="$(find adaptive_grasping)/worlds/$(arg environment_name).world"/>
+    	    <arg name="world_name" value="$(find single_lwr_robot)/worlds/$(arg environment_name).world"/>
     	    <arg name="paused" value="true"/>
     	    <arg name="use_sim_time" value="true"/>
     	    <arg name="gui" value="true"/>
@@ -57,7 +57,7 @@
 	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
     <!-- Loads joint controller configurations from YAML file to parameter server -->
-    <rosparam command="load" file="$(find adaptive_grasping)/config/sh_kuka_controllers.yaml"/>
+    <rosparam command="load" file="$(find adaptive_grasp_controller)/configs/sh_kuka_controllers.yaml"/>
 
     <!-- Loads HW configurations from YAML file to parameter server -->
     <rosparam command="load" file="$(find vito_description)/config/hardware_interfaces.yaml"/>
