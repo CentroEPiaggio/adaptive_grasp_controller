@@ -114,10 +114,10 @@
 
   	<!-- Loads RViz -->
 	<group if="$(arg use_rviz)">
-		<node name="lwr_rviz" pkg="rviz" type="rviz" respawn="false" args="-d $(find hybrid_automaton_manager_lwr)/configs/simple_config_soma.rviz" output="screen"/>
+		<node name="lwr_rviz" pkg="rviz" type="rviz" respawn="false" args="-d $(find adaptive_grasp_controller)/configs/simple_config_soma.rviz" output="screen"/>
 
 		<!-- Load collision objects into the planning scene -->
-  		<node name="loadCollisions" pkg="hybrid_automaton_manager_lwr" type="testSDF2MoveIt" args="$(find single_lwr_robot)/worlds/$(arg environment_name).world --skipIfco" output="screen"/>
+  		<node name="sdf_to_planning_scene" pkg="adaptive_grasp_controller" type="sdf_to_planning_scene_node" args="$(find single_lwr_robot)/worlds/$(arg environment_name).world --skipIfco" output="screen"/>
 	</group>
 
 	<group if="$(arg use_other_utils)">
