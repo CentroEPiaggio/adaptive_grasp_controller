@@ -2,5 +2,6 @@
 # Remember that there can be other important constants that can only be changed from the src code.
 
 publish_touch_demo:
-  input_finger_id: 3                       # the id of the touching finger (1 for thumb to 5 for pinky)
-  input_synergy_threshold: 0.4             # the threshold of synergy after which the touch will be published
+  input_finger_id: 1                       # the id of the touching finger (1 for thumb to 5 for pinky)
+  input_synergy_threshold: 0.25            # the threshold of synergy after which the touch will be published
+  output_synergy_threshold: 0.75           # the threshold of synergy after which the the adaptive motion will be stopped

@@ -36,6 +36,7 @@ sensor_msgs::JointState::ConstPtr full_joint_state;	        // a msg where the s
 ros::Publisher pub_fing_id; 							    // publisher for the id of the finger
 int finger_id;
 double input_synergy_threshold;
+double output_synergy_threshold;
 
 /**********************************************************************************************
  GET FINGER JOINT STATES
@@ -85,6 +86,12 @@ bool getParamsOfYaml(){
 		success = false;
 	}
 
+	if(!ros::param::get("/publish_touch_demo/output_synergy_threshold", output_synergy_threshold)){
+		ROS_WARN("output_synergy_threshold param not found in param server! Using default value 0.8.");
+		output_synergy_threshold = 0.8;
+		success = false;
+	}
+
 	return success;
 }
 
@@ -129,6 +136,7 @@ int main(int argc, char** argv){
 
 	// Bool for couting only once
 	bool first_time = true;
+	bool second_time = true;
 
 	// Spining and looking for synergy value to publish at correct time
 	while(ros::ok()){
@@ -136,7 +144,7 @@ int main(int argc, char** argv){
         synergy_joint = getFingerJointState();
 
         // Publishing the finger_id if synergy is at a certain value
-        if(synergy_joint >= input_synergy_threshold){
+        if(synergy_joint >= input_synergy_threshold && synergy_joint <= output_synergy_threshold){
 			if(first_time){
 				ROS_INFO_STREAM("Publishing the finger_id " << finger_id << " on the touch topic!");
 				first_time = false;
@@ -144,7 +152,16 @@ int main(int argc, char** argv){
             pub_fing_id.publish(finger_id_msg);
         }
 
-        // Spinning to process callback
+		if(synergy_joint > output_synergy_threshold){
+			if(second_time){
+				ROS_INFO_STREAM("Stopping the adaptive motion!");
+				second_time = false;
+			}
+			finger_id_msg.data = 6;
+            pub_fing_id.publish(finger_id_msg);
+        }
+
+        // Spinning to process callbacks
         ros::spinOnce();
     }
 
