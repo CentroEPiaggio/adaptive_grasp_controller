@@ -755,7 +755,7 @@ bool AdaptiveGraspControllerCaller::getParamsOfYaml(){
 		IMU_TOPIC = "touching_finger_topic";
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/FT_TOPIC", FT_TOPIC)){
+	if(!ros::param::get("/adaptive_grasp_controller/FT_TOPIC", FT_TOPIC)){
 		ROS_WARN("FT_TOPIC param not found in param server! Using default.");
 		FT_TOPIC = "/ft_sensor";
 		success = false;
@@ -805,9 +805,9 @@ bool AdaptiveGraspControllerCaller::getParamsOfYaml(){
 		COMPENS_PERC = 50;
 		success = false;
 	}
-	if(!ros::param::get("/imu_grasp_controller/COMPENS_PERC", COMPENS_PERC)){
-		ROS_WARN("COMPENS_PERC param not found in param server! Using default.");
-		COMPENS_PERC = 50;
+	if(!ros::param::get("/adaptive_grasp_controller/FT_THRESHOLD", FT_THRESHOLD)){
+		ROS_WARN("FT_THRESHOLD param not found in param server! Using default.");
+		FT_THRESHOLD = 3;
 		success = false;
 	}
 	if(!ros::param::get("/adaptive_grasp_controller/USE_SIGNATURE", USE_SIGNATURE)){
