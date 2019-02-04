@@ -127,6 +127,9 @@ int main(int argc, char** argv){
     full_joint_state = ros::topic::waitForMessage<sensor_msgs::JointState>("/joint_states", *fjs_nh);
     ros::spinOnce();
 
+	// Bool for couting only once
+	bool first_time = true;
+
 	// Spining and looking for synergy value to publish at correct time
 	while(ros::ok()){
         // Getting the present synergy
@@ -134,7 +137,9 @@ int main(int argc, char** argv){
 
         // Publishing the finger_id if synergy is at a certain value
         if(synergy_joint >= input_synergy_threshold){
-            ROS_INFO("Publishing the finger_id on the touch topic!");
+			if(first_time){
+				ROS_INFO_STREAM("Publishing the finger_id " << finger_id << " on the touch topic!");
+			}
             pub_fing_id.publish(finger_id_msg);
         }
 
