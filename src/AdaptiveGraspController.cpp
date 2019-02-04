@@ -887,6 +887,7 @@ bool AdaptiveGraspControllerCaller::call_adaptive_grasp_controller(adaptive_gras
     } catch (tf::TransformException ex){
       	ROS_ERROR("%s",ex.what());
       	ros::Duration(1.0).sleep();
+		return false;
     }
 
     try {
@@ -895,6 +896,7 @@ bool AdaptiveGraspControllerCaller::call_adaptive_grasp_controller(adaptive_gras
     } catch (tf::TransformException ex){
       	ROS_ERROR("%s",ex.what());
       	ros::Duration(1.0).sleep();
+		return false;
     }
 
     tf::Transform ee_transform(stamp_ee_transform.getRotation(), stamp_ee_transform.getOrigin());
@@ -913,6 +915,8 @@ bool AdaptiveGraspControllerCaller::call_adaptive_grasp_controller(adaptive_gras
 	// Perform motion plan and sendJointCommand()
 	if(finger_id != 0) performMotionPlan();
 	else ROS_INFO_STREAM("THIS IS STRANGE: NO FINGER COLLISION WAS RECEIVED FROM IMUs! SO THIS IS A SIMPLE SURFACE GRASP!");
+
+	return true;
 }
 
 
