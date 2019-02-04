@@ -1,9 +1,7 @@
 # ADAPTIVE GRASP CONTROLLER
 
-This package implements the Adaptive Grasp Controller for the *Pisa/IIT SoftHand*. This controller is to be integrated in the SOMA Planner.
+This package implements the Adaptive Grasp Controller for the *Pisa/IIT SoftHand* and the *KUKA LWR*. This controller can be used as an alternative for the simple grasp in the SOMA Planner.
 In order to try this on a real robot, the *IMU Glove* for the *Pisa/IIT SoftHand* is required.
-
-Many topic names and joint names are still hard coded in the src code, so be careful when using this code with any robot. This needs to be changed later by parsing everything from a proper yaml file.
 
 #### Authors
 
@@ -15,11 +13,14 @@ Many topic names and joint names are still hard coded in the src code, so be car
 ### Prerequisites
 
 This package is tested to work on Ubuntu 14.04 with ROS Indigo.
-To build the Adaptive Grasp Controller, it is necessary to have the following packages by Centro Piaggio:
+To build the Adaptive Grasp Controller, it is necessary to have the following packages from the GitHub page of Centro Piaggio:
 
 (UPDATE HERE)
-- finger_fk : https://github.com/CentroEPiaggio/finger_fk
-- imu_glove_finger_touch_utils : https://github.com/CentroEPiaggio/imu_glove_finger_touch_utils 
+- **kuka-lwr** (branch: soma_devel) : https://github.com/CentroEPiaggio/kuka-lwr
+- **pisa-iit-soft-hand** (branch: qb_interface_devel) : https://github.com/CentroEPiaggio/pisa-iit-soft-hand
+- **vito-robot** (branch: soma_july_review) : https://github.com/CentroEPiaggio/vito-robot
+- **finger_fk** (branch: soma_july_review) : https://github.com/CentroEPiaggio/finger_fk
+- **imu_glove_finger_touch_utils** (branch: master) : https://github.com/CentroEPiaggio/imu_glove_finger_touch_utils 
 
 So please install them properly before.
 
