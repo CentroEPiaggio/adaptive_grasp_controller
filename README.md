@@ -97,6 +97,8 @@ rosservice call /adaptive_grasp_controller "run: true"
 
 This will make the robot start to close the hand and whenever a touch is found by the `collision_identification` node the id of the finger in collision will be published to the topic `/finger_touching_topic`. This will cause a change in the grasping strategy (For more, refer to the deliverable).
 
+![Image of Setup](https://github.com/CentroEPiaggio/adaptive_grasp_controller/blob/master/images/setup.png)
+
 ### Extra: Manually simulate finger touches
 
 Instead of launching `launchPublishTouchDemo.launch`, finger touches can be simulated by manually publishing the id of the finger, that we suppose touches the object, to the topic `/finger_touching_topic`.
