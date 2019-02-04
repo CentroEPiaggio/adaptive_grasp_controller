@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   tf
   tf_conversions
-  qb_interface
   moveit_msgs
   moveit_ros_planning 
   moveit_ros_planning_interface
