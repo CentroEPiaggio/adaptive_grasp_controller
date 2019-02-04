@@ -713,8 +713,6 @@ void AdaptiveGraspControllerCaller::sendJointTrajectory(trajectory_msgs::JointTr
 	// Sleep to wait the conclusion of execution
 	sleep(2);
 
-	delete joint_client;
-
 	if(psm != NULL) {
 		delete psm;
 		psm = NULL;
@@ -838,6 +836,9 @@ void AdaptiveGraspControllerCaller::publishStuff(const std::vector<geometry_msgs
 
 /* ******************************************************************************************** */
 bool AdaptiveGraspControllerCaller::call_adaptive_grasp_controller(adaptive_grasp_controller::adaptive_controller::Request &req, adaptive_grasp_controller::adaptive_controller::Response &res) {
+	// Checking the request
+	if(req.run == false) return false;
+
 	// Getting params from parameter server
 	if(!getParamsOfYaml()) ROS_WARN("Some params not loaded correctly!");
 
@@ -887,7 +888,6 @@ bool AdaptiveGraspControllerCaller::call_adaptive_grasp_controller(adaptive_gras
     } catch (tf::TransformException ex){
       	ROS_ERROR("%s",ex.what());
       	ros::Duration(1.0).sleep();
-		return false;
     }
 
     try {
@@ -896,7 +896,6 @@ bool AdaptiveGraspControllerCaller::call_adaptive_grasp_controller(adaptive_gras
     } catch (tf::TransformException ex){
       	ROS_ERROR("%s",ex.what());
       	ros::Duration(1.0).sleep();
-		return false;
     }
 
     tf::Transform ee_transform(stamp_ee_transform.getRotation(), stamp_ee_transform.getOrigin());
@@ -916,6 +915,7 @@ bool AdaptiveGraspControllerCaller::call_adaptive_grasp_controller(adaptive_gras
 	if(finger_id != 0) performMotionPlan();
 	else ROS_INFO_STREAM("THIS IS STRANGE: NO FINGER COLLISION WAS RECEIVED FROM IMUs! SO THIS IS A SIMPLE SURFACE GRASP!");
 
+	res.answer = true;
 	return true;
 }
 
