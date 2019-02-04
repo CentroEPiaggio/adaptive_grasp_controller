@@ -73,6 +73,12 @@ rosservice call /adaptive_grasp_controller "run: true"
 
 The hand will start to close and a touch will be detected on the specified finger (`finger_id`) when the synergy value reaches `input_synergy_threshold`. Then the adaptive motion will be computed and forwarded to the robot. During execution, when the synergy value exceeds `output_synergy_threshold` the adaptive motion is stopped and the hand will complete the closing.
 
+![Image of Screen 3](https://github.com/CentroEPiaggio/adaptive_grasp_controller/blob/master/images/screen_3.png)
+
+In summary, in order to try the Adaptive Grasping simulation four terminals are required. The following is a possible terminator split configuration:
+
+![Image of Screen 1](https://github.com/CentroEPiaggio/adaptive_grasp_controller/blob/master/images/screen_1.png)
+
 ### Trying the Adaptive Grasp with the IMU Glove (real robot)
 
 Even here we suppose that the robot is already in a grasp pose above the object to be grabbed. In order to do experiments using the *IMU Glove*, the `collision_identification` node needs to be running. 
