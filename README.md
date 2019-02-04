@@ -61,6 +61,10 @@ The Adaptive Grasp can be tried out in simulation without an acutal touch sensin
 roslaunch adaptive_grasp_controller launchPublishTouchDemo.launch
 ```
 
+At this point, the robot should be loaded in Gazebo and the terminals should look as in the image below:
+
+![Image of Screen 2](https://github.com/CentroEPiaggio/adaptive_grasp_controller/blob/master/images/screen_2.png)
+
 Now the final step is to call the Adaptive Grasp service:
 
 ```
