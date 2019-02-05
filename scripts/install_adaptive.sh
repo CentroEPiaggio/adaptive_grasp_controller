@@ -18,16 +18,16 @@ sleep 2
 echo "As we are in SOMA, I am assuming that this system has ROS Indigo."
 
 # Ask if to use catkin_make or catkin build
-echo "What is your catkin build tool? Type '1' for caktin_make or '2' for catkin build."
-read -n 1 build_tool
+echo "What is your catkin build tool? Type 'm' for caktin_make or 'b' for catkin build."
+read -n 1 btl
 echo " "
 
-if ["$build_tool" == "1"]; then
+if ["$btl" == "m"]; then
     echo "Using catkin_make for building the packages!"
-elif ["$build_tool" == "2"]; then
+elif ["$btl" == "b"]; then
     echo "Using catkin build for building the packages!"
 else
-    echo "ERROR: the typed char should have been either '1' or '2'!"
+    echo "ERROR: the typed char should have been either 'm' or 'b'!"
     echo "Please re-run the script and choose a valid option."
     exit
 fi

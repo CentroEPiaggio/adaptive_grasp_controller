@@ -27,11 +27,12 @@ For testing on real robot with IMU Glove install also:
 
 ### Installing
 
-To install everything just cd to the package folder and run the bash script `install.sh` as follows:
+To install everything just cd to the package folder and run the bash script `install_adaptive.sh` as follows:
 
 ```
 cd scripts
-sudo ./install.sh
+chmod +x install_adaptive.sh
+sudo ./install_adaptive.sh
 ```
 
 If any missing packages are found during the installation, please install them and re-run the script. If any error related to `TransmissionSharedPtr` appears while compiling `gazebo_ros_soft_hand`, please checkout to the `qb_interface_devel` branch of the package `pisa-iit-soft-hand`.
