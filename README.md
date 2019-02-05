@@ -15,10 +15,11 @@ In order to try this on a real robot, the *IMU Glove* for the *Pisa/IIT SoftHand
 This package is tested to work on Ubuntu 14.04 with ROS Indigo.
 To build the Adaptive Grasp Controller, it is necessary to have the following packages from the GitHub page of Centro Piaggio:
 
-- **kuka-lwr** (branch: soma_devel) : https://github.com/CentroEPiaggio/kuka-lwr
-- **pisa-iit-soft-hand** (branch: qb_interface_devel) : https://github.com/CentroEPiaggio/pisa-iit-soft-hand
-- **vito-robot** (branch: soma_july_review) : https://github.com/CentroEPiaggio/vito-robot
+- **hrl-kdl** (branch: master) : https://github.com/CentroEPiaggio/hrl-kdl
 - **finger_fk** (branch: soma_july_review) : https://github.com/CentroEPiaggio/finger_fk
+- **kuka-lwr** (branch: soma_devel) : https://github.com/CentroEPiaggio/kuka-lwr
+- **pisa-iit-soft-hand** (branch: indigo_devel) : https://github.com/CentroEPiaggio/pisa-iit-soft-hand
+- **vito-robot** (branch: soma_july_review) : https://github.com/CentroEPiaggio/vito-robot
 
 For testing on real robot with IMU Glove install also:
 
@@ -26,7 +27,13 @@ For testing on real robot with IMU Glove install also:
 
 ### Installing
 
-To install everything just clone this and the other needed packages into your catkin workspace and `catkin_make`.
+To install everything just cd to the package folder and run the bash script `install.sh` as follows:
+
+```
+sudo ./install.sh
+```
+
+If any missing packages are found during the installation, please install them and re-run the script. If any error related to `TransmissionSharedPtr` appears while compiling `gazebo_ros_soft_hand`, please checkout to the `qb_interface_devel` branch of the package `pisa-iit-soft-hand`.
 
 ### Some preliminary notes
 
