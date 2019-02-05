@@ -30,6 +30,7 @@ For testing on real robot with IMU Glove install also:
 To install everything just cd to the package folder and run the bash script `install.sh` as follows:
 
 ```
+cd scripts
 sudo ./install.sh
 ```
 
