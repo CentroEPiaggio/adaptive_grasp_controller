@@ -130,7 +130,7 @@ if [[ "$rosdist" == "i" ]]; then
     test_if_package_is_installed ros-indigo-pluginlib ros-indigo-transmission-interface
 else
     test_if_package_is_installed ros-kinetic-rviz-* ros-kinetic-actionlib-msgs ros-kinetic-interactive-markers ros-kinetic-visualization-msgs
-    test_if_package_is_installed libsdformat2-dev sdformat-sdf libeigen3-dev ros-kinetic-controller-interface ros-kinetic-control-msgs
+    test_if_package_is_installed libsdformat4-dev sdformat-sdf libeigen3-dev ros-kinetic-controller-interface ros-kinetic-control-msgs
     test_if_package_is_installed ros-kinetic-forward-command-controller ros-kinetic-control-toolbox ros-kinetic-realtime-tools ros-kinetic-urdf
     test_if_package_is_installed ros-kinetic-kdl-parser ros-kinetic-kdl-conversions ros-kinetic-cmake-modules ros-kinetic-tf-conversions
     test_if_package_is_installed ros-kinetic-controller-manager ros-kinetic-hardware-interface ros-kinetic-joint-limits-interface
