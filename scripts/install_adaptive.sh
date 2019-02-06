@@ -331,9 +331,11 @@ fi
 
 echo " "
 echo "Finished making/building... Exiting!"
+echo " "
 echo "Please refer to the README.md of adaptive_grasp_controller and of the other packages for execution."
 
-
+echo " "
+echo "***"
 
 
 
