@@ -28,16 +28,21 @@ For testing on real robot with IMU Glove install also:
 
 ### Installing
 
-To install everything just cd to the package folder and run the bash script `install_adaptive.sh` as follows:
+First of all, your should have correctly sourced your ROS environment and the `setup.bash` of your workspace. Make also sure that you have no symlink to the workspace. To install everything clone this package into the `src` of your catkin workspace folder and just cd to the package folder and run the bash script `install_adaptive.sh` as follows:
 
 ```
-cd scripts
+cd adaptive_grasp_controller/scripts
 chmod +x install_adaptive.sh
-sudo ./install_adaptive.sh
+./install_adaptive.sh
 ```
 
 This script will check for the needed conditions and for missing packages and proceed to clone, switch to the correct branches and make all necessary repos.
-If any missing packages are found during the installation, please install them and re-run the script. If any error related to `TransmissionSharedPtr` appears while compiling `gazebo_ros_soft_hand`, please checkout to the `qb_interface_devel` branch of the package `pisa-iit-soft-hand`.
+If any missing packages are found during the installation, please install them and re-run the script. 
+
+**Troubleshooting:**
+- if any error related to `TransmissionSharedPtr` appears while compiling `gazebo_ros_soft_hand`, please checkout to the `qb_interface_devel` branch of the package `pisa-iit-soft-hand`
+- if `Import Error` for any `.srv` module is found, please delete the `devel` and the `build` folders or at least the relevant folders inside them and re-run the script `install_adaptive.sh`
+- if `catkin_make command not found` error is encountered, repeat the above stated step
 
 ### Some preliminary notes
 
@@ -49,7 +54,7 @@ This controller has been coded in the form of a ROS service. Most of the paramet
 
 ### Main files to be launched
 
-Roslaunch the launch files for the robot and the controller service as follows:
+Roslaunch in separate terminals the launch files for the robot and the controller service as follows:
 
 ```
 roslaunch adaptive_grasp_controller launchLWRSoftHandJointTraj.launch
