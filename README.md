@@ -52,6 +52,19 @@ This controller has been coded in the form of a ROS service. Most of the paramet
 
 ## Running the Adaptive Grasp
 
+### TL;DR
+
+In four separate terminals run the following commands:
+
+```
+roslaunch adaptive_grasp_controller launchLWRSoftHandJointTraj.launch
+roslaunch adaptive_grasp_controller launchAdaptiveGraspSim.launch
+roslaunch imu_glove_finger_touch_utils launchCollisionIdentification.launch
+rosservice call /adaptive_grasp_controller "run: true"
+```
+
+The Adaptive Grasp will be performed for the default finger set in `publish_touch_demo.yaml`.
+
 ### Main files to be launched
 
 Roslaunch in separate terminals the launch files for the robot and the controller service as follows:
