@@ -16,8 +16,26 @@ echo "***************************************"
 
 sleep 2
 
+# Ask if the system has Indigo or Kinetic
 echo " "
-echo "As we are in SOMA, I am assuming that this system has ROS Indigo."
+echo "As we are in SOMA, it is recommended that you have ROS Indigo."
+echo " "
+echo "However, are you using ROS Indigo or ROS Kinetic?"
+echo "Type 'i' for ROS Indigo or 'k' for ROS Kinetic."
+read -n1 rosdist
+
+if [[ "$rosdist" == "i" ]]; then
+    echo " "
+    echo "Got It! ROS Indigo."
+elif [[ "$rosdist" == "k" ]]; then
+    echo " "
+    echo "Got It! ROS Kinetic."
+else
+    echo " "
+    echo "ERROR: the typed char is $rosdist, it should have been either 'i' or 'k'!"
+    echo "Please re-run the script and choose a valid option."
+    exit
+fi
 
 # Ask if this package is cloned inside the src folder of catkin workspace
 echo " "
@@ -103,12 +121,21 @@ function check_last_exit_code
 echo " "
 echo "Assuming that the most basic ROS packages are installed (RViz, Gazebo, MoveIt, TF and Actionlib). Checking for other needed packages!"
 
-test_if_package_is_installed ros-indigo-rviz-* ros-indigo-actionlib-msgs ros-indigo-interactive-markers ros-indigo-visualization-msgs
-test_if_package_is_installed libsdformat2-dev sdformat-sdf libeigen3-dev ros-indigo-controller-interface ros-indigo-control-msgs
-test_if_package_is_installed ros-indigo-forward-command-controller ros-indigo-control-toolbox ros-indigo-realtime-tools ros-indigo-urdf
-test_if_package_is_installed ros-indigo-kdl-parser ros-indigo-kdl-conversions ros-indigo-cmake-modules ros-indigo-tf-conversions
-test_if_package_is_installed ros-indigo-controller-manager ros-indigo-hardware-interface ros-indigo-joint-limits-interface
-test_if_package_is_installed ros-indigo-pluginlib ros-indigo-transmission-interface
+if [[ "$rosdist" == "i" ]]; then
+    test_if_package_is_installed ros-indigo-rviz-* ros-indigo-actionlib-msgs ros-indigo-interactive-markers ros-indigo-visualization-msgs
+    test_if_package_is_installed libsdformat2-dev sdformat-sdf libeigen3-dev ros-indigo-controller-interface ros-indigo-control-msgs
+    test_if_package_is_installed ros-indigo-forward-command-controller ros-indigo-control-toolbox ros-indigo-realtime-tools ros-indigo-urdf
+    test_if_package_is_installed ros-indigo-kdl-parser ros-indigo-kdl-conversions ros-indigo-cmake-modules ros-indigo-tf-conversions
+    test_if_package_is_installed ros-indigo-controller-manager ros-indigo-hardware-interface ros-indigo-joint-limits-interface
+    test_if_package_is_installed ros-indigo-pluginlib ros-indigo-transmission-interface
+else
+    test_if_package_is_installed ros-kinetic-rviz-* ros-kinetic-actionlib-msgs ros-kinetic-interactive-markers ros-kinetic-visualization-msgs
+    test_if_package_is_installed libsdformat2-dev sdformat-sdf libeigen3-dev ros-kinetic-controller-interface ros-kinetic-control-msgs
+    test_if_package_is_installed ros-kinetic-forward-command-controller ros-kinetic-control-toolbox ros-kinetic-realtime-tools ros-kinetic-urdf
+    test_if_package_is_installed ros-kinetic-kdl-parser ros-kinetic-kdl-conversions ros-kinetic-cmake-modules ros-kinetic-tf-conversions
+    test_if_package_is_installed ros-kinetic-controller-manager ros-kinetic-hardware-interface ros-kinetic-joint-limits-interface
+    test_if_package_is_installed ros-kinetic-pluginlib ros-kinetic-transmission-interface
+fi
 
 echo " "
 echo "It seems you have the required packages. Proceeding!"
