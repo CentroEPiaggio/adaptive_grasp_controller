@@ -61,7 +61,7 @@ else
     exit
 fi
 echo " "
-echo "---"
+echo "***"
 
 #-----------#
 # FUNCTIONS #
@@ -102,14 +102,18 @@ function check_last_exit_code
 
 echo " "
 echo "Assuming that the most basic ROS packages are installed (RViz, Gazebo, MoveIt, TF and Actionlib). Checking for other needed packages!"
+
 test_if_package_is_installed ros-indigo-rviz-* ros-indigo-actionlib-msgs ros-indigo-interactive-markers ros-indigo-visualization-msgs
 test_if_package_is_installed libsdformat2-dev sdformat-sdf libeigen3-dev ros-indigo-controller-interface ros-indigo-control-msgs
 test_if_package_is_installed ros-indigo-forward-command-controller ros-indigo-control-toolbox ros-indigo-realtime-tools ros-indigo-urdf
 test_if_package_is_installed ros-indigo-kdl-parser ros-indigo-kdl-conversions ros-indigo-cmake-modules ros-indigo-tf-conversions
 test_if_package_is_installed ros-indigo-controller-manager ros-indigo-hardware-interface ros-indigo-joint-limits-interface
 test_if_package_is_installed ros-indigo-pluginlib ros-indigo-transmission-interface
+
 echo " "
-echo "---"
+echo "It seems you have the required packages. Proceeding!"
+echo " "
+echo "***"
 
 sleep 2
 
@@ -117,68 +121,218 @@ sleep 2
 # CLONING AND CHECKING OUT #
 #--------------------------#
 
-echo " "
-echo "It seems you have the required packages. Proceeding!"
-
 # Getting the script directory path and cd to it
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-echo " "
-echo "The path to the script is $SCRIPT_DIR. Going to this directory."
 cd $SCRIPT_DIR
 
 sleep 2
 
 # Going back to src of catkin_workspace
 cd ../..
+CWS_DIR=$(pwd)
+echo " "
+echo "The path to the catkin workspace src is $CWS_DIR. I jumped to this directory."
 
 # Starting to clone the packages and switching to relevant branch
 echo " "
 echo "Starting to clone the repos for Adaptive Grasping and switching to correct branches!"
 
+echo " "
+echo "---"
+
 # Package hrl-kdl
 if ! [ -d "hrl-kdl" ]; then
     echo " "
 	echo "Cloning KDL utility package: hrl-kdl."
+    echo " "
 	git clone https://github.com/CentroEPiaggio/hrl-kdl.git hrl-kdl
 	check_last_exit_code "Cloning hrl-kdl"
 	cd hrl-kdl; git checkout indigo-devel
-    cd ..
+    cd $CWS_DIR
 else
     echo " "
 	echo "It seems that you already have KDL utility package: hrl-kdl! Skipping it..."
     echo "Is it the correct one? Later, please make sure it is on the required branch (see README.md)."
 fi
 
+echo " "
+echo "---"
+
 # Package finger_fk
 if ! [ -d "finger_fk" ]; then
     echo " "
 	echo "Cloning Finger FK package: finger_fk."
+    echo " "
 	git clone https://github.com/CentroEPiaggio/finger_fk.git finger_fk
 	check_last_exit_code "Cloning finger_fk"
 	cd finger_fk; git checkout soma_july_review
-    cd ..
+    cd $CWS_DIR
 else
     echo " "
 	echo "It seems that you already have Finger FK package: finger_fk! Skipping it..."
     echo "Is it the correct one? Later, please make sure it is on the required branch (see README.md)."
 fi
 
+echo " "
+echo "---"
+
 # Package IMU
 if ! [ -d "IMU" ]; then
     echo " "
-	echo "Cloning Finger FK package: IMU."
+	echo "Cloning IMU Glove package: IMU."
+    echo " "
 	git clone https://github.com/CentroEPiaggio/IMU.git IMU
 	check_last_exit_code "Cloning IMU"
-	cd IMU; git checkout soma_july_review
-    cd ..
+	cd IMU; git checkout master
+    echo " "
+    echo "Creating executables qbAPI and qbadmin."
+    cd Management/qbAPI/src; make
+    cd ../../qbadmin/src; make
+    cd $CWS_DIR
 else
     echo " "
-	echo "It seems that you already have Finger FK package: IMU! Skipping it..."
+	echo "It seems that you already have IMU Glove package: IMU! Skipping it..."
     echo "Is it the correct one? Later, please make sure it is on the required branch (see README.md)."
 fi
 
+echo " "
+echo "---"
+
+# Package kuka-lwr
+if ! [ -d "kuka-lwr" ]; then
+    echo " "
+	echo "Cloning KUKA LWR package: kuka-lwr."
+    echo " "
+	git clone https://github.com/CentroEPiaggio/kuka-lwr.git kuka-lwr
+	check_last_exit_code "Cloning kuka-lwr"
+	cd kuka-lwr; git checkout soma_devel
+    cd $CWS_DIR
+else
+    echo " "
+	echo "It seems that you already have KUKA LWR package: kuka-lwr! Skipping it..."
+    echo "Is it the correct one? Later, please make sure it is on the required branch (see README.md)."
+fi
+
+echo " "
+echo "---"
+
+# Package pisa-iit-soft-hand
+if ! [ -d "pisa-iit-soft-hand" ]; then
+    echo " "
+	echo "Cloning Pisa/IIT SoftHand package recursively: pisa-iit-soft-hand."
+    echo " "
+	git clone --recursive https://github.com/CentroEPiaggio/pisa-iit-soft-hand.git pisa-iit-soft-hand
+	check_last_exit_code "Cloning pisa-iit-soft-hand"
+	cd pisa-iit-soft-hand; git checkout indigo_devel
+    cd $CWS_DIR
+else
+    echo " "
+	echo "It seems that you already have Pisa/IIT SoftHand package: pisa-iit-soft-hand! Skipping it..."
+    echo "Is it the correct one? Later, please make sure it is on the required branch (see README.md)."
+fi
+
+echo " "
+echo "---"
+
+# Package vito-robot
+if ! [ -d "vito-robot" ]; then
+    echo " "
+	echo "Cloning Vito Robot package: vito-robot."
+    echo " "
+	git clone https://github.com/CentroEPiaggio/vito-robot.git vito-robot
+	check_last_exit_code "Cloning vito-robot"
+	cd vito-robot; git checkout soma_july_review
+    cd $CWS_DIR
+else
+    echo " "
+	echo "It seems that you already have Vito Robot package: vito-robot! Skipping it..."
+    echo "Is it the correct one? Later, please make sure it is on the required branch (see README.md)."
+fi
+
+echo " "
+echo "***"
+
+sleep 2
+
+#-----------#
+# COMPILING #
+#-----------#
+
+# Going to catkin workspace folder
+cd $CWS_DIR; cd ..
+
 # For compiling faster
 MAKEFLAGS="-j8"
+
+# Making packages in the correct order
+
+echo " "
+echo "Finished cloning... Now proceeding to make/build the repos for Adaptive Grasping!"
+
+if [[ "$btl" == "m" ]]; then
+    echo " "
+	echo "Making hrl_kdl package."
+    echo " "
+    catkin_make --pkg hrl_geom pykdl_utils
+    echo " "
+	echo "Making finger_fk package."
+    echo " "
+    catkin_make --pkg finger_fk
+    echo " "
+	echo "Making IMU (qb_interface) package."
+    echo " "
+    catkin_make --pkg qb_interface
+    echo " "
+	echo "Making kuka-lwr package."
+    echo " "
+    catkin_make --pkg lwr_controllers lwr_description lwr_hw single_lwr_launch single_lwr_moveit single_lwr_robot
+    echo " "
+	echo "Making pisa-iit-soft-hand package."
+    echo " "
+    catkin_make --pkg gazebo_ros_soft_hand soft_hand_controllers soft_hand_description soft_hand_qb_ros_control soft_hand_ros_control
+    echo " "
+	echo "Making vito-robot package."
+    echo " "
+    catkin_make --pkg vito_description vito_moveit_configuration
+    echo " "
+	echo "And finally making adaptive_grasp_controller package."
+    echo " "
+    catkin_make --pkg adaptive_grasp_controller
+else
+    echo " "
+	echo "Building hrl_kdl package."
+    echo " "
+    catkin build hrl_geom pykdl_utils
+    echo " "
+	echo "Building finger_fk package."
+    echo " "
+    catkin build finger_fk
+    echo " "
+	echo "Building IMU (qb_interface) package."
+    echo " "
+    catkin build qb_interface
+    echo " "
+	echo "Building kuka-lwr package."
+    echo " "
+    catkin build lwr_controllers lwr_description lwr_hw single_lwr_launch single_lwr_moveit single_lwr_robot
+    echo " "
+	echo "Building pisa-iit-soft-hand package."
+    echo " "
+    catkin build gazebo_ros_soft_hand soft_hand_controllers soft_hand_description soft_hand_qb_ros_control soft_hand_ros_control
+    echo " "
+	echo "Building vito-robot package."
+    echo " "
+    catkin build vito_description vito_moveit_configuration
+    echo " "
+	echo "And finally building adaptive_grasp_controller package."
+    echo " "
+    catkin build adaptive_grasp_controller
+fi
+
+echo " "
+echo "Finished making/building... Exiting!"
+echo "Please refer to the README.md of adaptive_grasp_controller and of the other packages for execution."
+
 
 
 
