@@ -74,7 +74,7 @@ function test_if_package_is_installed
  until [ -z "$1" ]; do
     if [ $(dpkg-query -W -f='${Status}' $1 2>/dev/null | grep -c "ok installed") -eq 0 ];then
         echo " "
-        echo "Please install package $1 and rerun the script"
+        echo "Please install package $1 and re-run the script!"
         stopscript=1
     fi
     shift
@@ -91,7 +91,7 @@ function check_last_exit_code
  if [ $laststatus -ne 0 ]
  then
     echo " "
-    echo "$1 failed. Exit now!"
+    echo "$1 failed. Exiting now!"
     exit $laststatus
  fi
 }
@@ -137,10 +137,44 @@ echo "Starting to clone the repos for Adaptive Grasping and switching to correct
 
 # Package hrl-kdl
 if ! [ -d "hrl-kdl" ]; then
-	echo "Cloning KDL utility package: hrl-kdl"
+    echo " "
+	echo "Cloning KDL utility package: hrl-kdl."
 	git clone https://github.com/CentroEPiaggio/hrl-kdl.git hrl-kdl
 	check_last_exit_code "Cloning hrl-kdl"
-	$(cd hrl-kdl; git remote set-url --push origin https://github.com/CentroEPiaggio/hrl-kdl.git)
+	cd hrl-kdl; git checkout indigo-devel
+    cd ..
+else
+    echo " "
+	echo "It seems that you already have KDL utility package: hrl-kdl! Skipping it..."
+    echo "Is it the correct one? Later, please make sure it is on the required branch (see README.md)."
+fi
+
+# Package finger_fk
+if ! [ -d "finger_fk" ]; then
+    echo " "
+	echo "Cloning Finger FK package: finger_fk."
+	git clone https://github.com/CentroEPiaggio/finger_fk.git finger_fk
+	check_last_exit_code "Cloning finger_fk"
+	cd finger_fk; git checkout soma_july_review
+    cd ..
+else
+    echo " "
+	echo "It seems that you already have Finger FK package: finger_fk! Skipping it..."
+    echo "Is it the correct one? Later, please make sure it is on the required branch (see README.md)."
+fi
+
+# Package IMU
+if ! [ -d "IMU" ]; then
+    echo " "
+	echo "Cloning Finger FK package: IMU."
+	git clone https://github.com/CentroEPiaggio/IMU.git IMU
+	check_last_exit_code "Cloning IMU"
+	cd IMU; git checkout soma_july_review
+    cd ..
+else
+    echo " "
+	echo "It seems that you already have Finger FK package: IMU! Skipping it..."
+    echo "Is it the correct one? Later, please make sure it is on the required branch (see README.md)."
 fi
 
 # For compiling faster
