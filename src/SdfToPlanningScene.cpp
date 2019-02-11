@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 	ros::NodeHandle node_handle;
 
 	if(argc < 2) {
-		ROS_ERROR("Usage: rosrun hybrid_automaton_manager_kuka SdfToPlanningScene <world> <optional: --skipIfco>");
+		ROS_ERROR("Usage: rosrun adaptive_grasp_controller SdfToPlanningScene <world> <optional: --skipIfco>");
 	}
 	ROS_WARN("%s: Sleeping to allow other nodes to start\n", ros::this_node::getName().c_str());
 	ROS_WARN("%s: Input world: '%s'\n", ros::this_node::getName().c_str(), argv[1]);
