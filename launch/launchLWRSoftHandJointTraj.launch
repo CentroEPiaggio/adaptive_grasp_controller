@@ -4,7 +4,7 @@
 	<!-- LAUNCH ARGUMENTS -->
 
 	<!-- Robot to be used -->
-  <arg name="robot_name" default="lwr_adaptive"/>
+  	<arg name="robot_name" default="lwr_adaptive"/>
 
 	<!-- Set world to be used -->
 	<arg name="environment_name" default="lwr_soma_surface"/>
