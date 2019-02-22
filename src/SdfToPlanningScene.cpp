@@ -49,8 +49,8 @@ int main(int argc, char **argv) {
 	if(argc < 2) {
 		ROS_ERROR("Usage: rosrun adaptive_grasp_controller SdfToPlanningScene <world> <optional: --skipIfco>");
 	}
-	ROS_WARN("%s: Sleeping to allow other nodes to start\n", ros::this_node::getName().c_str());
-	ROS_WARN("%s: Input world: '%s'\n", ros::this_node::getName().c_str(), argv[1]);
+	ROS_INFO("%s: Sleeping to allow other nodes to start\n", ros::this_node::getName().c_str());
+	ROS_INFO("%s: Input world: '%s'\n", ros::this_node::getName().c_str(), argv[1]);
 	sleep(2); 
 
 
