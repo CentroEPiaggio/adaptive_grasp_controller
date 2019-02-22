@@ -670,7 +670,7 @@ void AdaptiveGraspControllerCaller::stopArmWhenCollision(actionlib::SimpleAction
 /* ******************************************************************************************** */
 void AdaptiveGraspControllerCaller::sendJointTrajectory(trajectory_msgs::JointTrajectory trajectory) {
 	// Create the action client for the arm
-	joint_client = new actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>("/" + string(ARM_NAME) + "/joint_trajectory_controller/follow_joint_trajectory/", true);
+	joint_client = new actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>("/" + string(ARM_NAME) + "/position_joint_trajectory_controller/follow_joint_trajectory/", true);
 
 	joint_client->waitForServer();
 
@@ -730,12 +730,12 @@ bool AdaptiveGraspControllerCaller::getParamsOfYaml(){
 
 	if(!ros::param::get("/adaptive_grasp_controller/ARM_NAME", ARM_NAME)){
 		ROS_WARN("ARM_NAME param not found in param server! Using default.");
-		ARM_NAME = "right_arm";
+		ARM_NAME = "panda_arm";
 		success = false;
 	}
 	if(!ros::param::get("/adaptive_grasp_controller/MOVEIT_GROUP", MOVEIT_GROUP)){
 		ROS_WARN("MOVEIT_GROUP param not found in param server! Using default.");
-		MOVEIT_GROUP = "full_lwr";
+		MOVEIT_GROUP = "panda_arm";
 		success = false;
 	}
 	if(!ros::param::get("/adaptive_grasp_controller/HAND_NAME", HAND_NAME)){
