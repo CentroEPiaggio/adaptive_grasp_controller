@@ -1,20 +1,19 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding='utf-8'?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda_softhand">
 
   <!-- MODELS -->
-  <xacro:include filename="$(find franka_description)/robots/panda_arm.urdf.xacro"/>
-  <xacro:include filename="$(find soft_hand_description)/model/soft_hand_soma_ocado.urdf.xacro"/>
+  <xacro:include filename="$(find franka_description)/robots/panda_arm.xacro"/>
+  <xacro:include filename="$(find soft_hand_description)/model/soft_hand_soma_panda.urdf.xacro"/>
 
-  <link name="world"/>
+  <!-- <link name="world"/> -->
 
   <!-- PANDA ARM -->
-  <xacro:panda_arm>
-  </xacro:panda_arm>
+  <xacro:panda_arm />
 
   <!-- RIGHT SOFTHAND -->
-  <xacro:soft_hand_soma_ocado parent="panda_link8" name="right_hand" left="false" withAdaptiveTransmission="true" useMimicTag="true">
+  <xacro:soft_hand_soma_panda parent="panda_link8" name="right_hand" left="false" withAdaptiveTransmission="true" useMimicTag="true">
     <origin xyz="0 0 0" rpy="0 0 3.1415"/>
-  </xacro:soft_hand_soma_ocado>
+  </xacro:soft_hand_soma_panda>
 
   <!-- EXTRA ENDEFFECTOR -->
   <!-- <joint name="right_hand_ee_joint" type="fixed">
