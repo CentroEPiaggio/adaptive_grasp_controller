@@ -6,7 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-      Splitter Ratio: 0.5
+        - /TF1
+      Splitter Ratio: 0.755043209
     Tree Height: 764
   - Class: rviz/Selection
     Name: Selection
@@ -517,6 +518,170 @@ Visualization Manager:
         Show Robot Collision: false
         Show Robot Visual: true
       Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        panda_EE:
+          Value: false
+        panda_K:
+          Value: false
+        panda_link0:
+          Value: false
+        panda_link1:
+          Value: false
+        panda_link2:
+          Value: false
+        panda_link3:
+          Value: false
+        panda_link4:
+          Value: false
+        panda_link5:
+          Value: false
+        panda_link6:
+          Value: false
+        panda_link7:
+          Value: false
+        panda_link8:
+          Value: false
+        right_hand_index_distal_link:
+          Value: false
+        right_hand_index_fake_link1:
+          Value: false
+        right_hand_index_fake_link2:
+          Value: false
+        right_hand_index_fake_link3:
+          Value: false
+        right_hand_index_knuckle_link:
+          Value: false
+        right_hand_index_middle_link:
+          Value: false
+        right_hand_index_proximal_link:
+          Value: false
+        right_hand_invisible_wire_link:
+          Value: false
+        right_hand_little_distal_link:
+          Value: false
+        right_hand_little_fake_link1:
+          Value: false
+        right_hand_little_fake_link2:
+          Value: false
+        right_hand_little_fake_link3:
+          Value: false
+        right_hand_little_knuckle_link:
+          Value: false
+        right_hand_little_middle_link:
+          Value: false
+        right_hand_little_proximal_link:
+          Value: false
+        right_hand_middle_distal_link:
+          Value: false
+        right_hand_middle_fake_link1:
+          Value: false
+        right_hand_middle_fake_link2:
+          Value: false
+        right_hand_middle_fake_link3:
+          Value: false
+        right_hand_middle_knuckle_link:
+          Value: false
+        right_hand_middle_middle_link:
+          Value: false
+        right_hand_middle_proximal_link:
+          Value: false
+        right_hand_palm_link:
+          Value: false
+        right_hand_panda_flange:
+          Value: false
+        right_hand_ring_distal_link:
+          Value: false
+        right_hand_ring_fake_link1:
+          Value: false
+        right_hand_ring_fake_link2:
+          Value: false
+        right_hand_ring_fake_link3:
+          Value: false
+        right_hand_ring_knuckle_link:
+          Value: false
+        right_hand_ring_middle_link:
+          Value: false
+        right_hand_ring_proximal_link:
+          Value: false
+        right_hand_softhand_round_base:
+          Value: false
+        right_hand_thumb_distal_link:
+          Value: false
+        right_hand_thumb_fake_link1:
+          Value: false
+        right_hand_thumb_fake_link3:
+          Value: false
+        right_hand_thumb_knuckle_link:
+          Value: false
+        right_hand_thumb_proximal_link:
+          Value: false
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: false
+      Show Axes: true
+      Show Names: true
+      Tree:
+        panda_link0:
+          panda_link1:
+            panda_link2:
+              panda_link3:
+                panda_link4:
+                  panda_link5:
+                    panda_link6:
+                      panda_link7:
+                        panda_link8:
+                          panda_EE:
+                            panda_K:
+                              {}
+                          right_hand_panda_flange:
+                            right_hand_softhand_round_base:
+                              right_hand_palm_link:
+                                right_hand_index_knuckle_link:
+                                  right_hand_index_fake_link1:
+                                    right_hand_index_proximal_link:
+                                      right_hand_index_fake_link2:
+                                        right_hand_index_middle_link:
+                                          right_hand_index_fake_link3:
+                                            right_hand_index_distal_link:
+                                              {}
+                                right_hand_invisible_wire_link:
+                                  {}
+                                right_hand_little_knuckle_link:
+                                  right_hand_little_fake_link1:
+                                    right_hand_little_proximal_link:
+                                      right_hand_little_fake_link2:
+                                        right_hand_little_middle_link:
+                                          right_hand_little_fake_link3:
+                                            right_hand_little_distal_link:
+                                              {}
+                                right_hand_middle_knuckle_link:
+                                  right_hand_middle_fake_link1:
+                                    right_hand_middle_proximal_link:
+                                      right_hand_middle_fake_link2:
+                                        right_hand_middle_middle_link:
+                                          right_hand_middle_fake_link3:
+                                            right_hand_middle_distal_link:
+                                              {}
+                                right_hand_ring_knuckle_link:
+                                  right_hand_ring_fake_link1:
+                                    right_hand_ring_proximal_link:
+                                      right_hand_ring_fake_link2:
+                                        right_hand_ring_middle_link:
+                                          right_hand_ring_fake_link3:
+                                            right_hand_ring_distal_link:
+                                              {}
+                                right_hand_thumb_knuckle_link:
+                                  right_hand_thumb_fake_link1:
+                                    right_hand_thumb_proximal_link:
+                                      right_hand_thumb_fake_link3:
+                                        right_hand_thumb_distal_link:
+                                          {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -542,25 +707,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 9.41079712
+      Distance: 1.5675
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.395019829
-        Y: 0.789970279
-        Z: -0.111322179
+        X: 0.306723028
+        Y: 0.0876588449
+        Z: 0.229482621
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.3453978
+      Pitch: 0.250397414
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.27039802
+      Yaw: 1.45039678
     Saved: ~
 Window Geometry:
   Displays:
