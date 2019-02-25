@@ -3,7 +3,11 @@
 <launch>
     <!-- LAUNCH ARGUMENTS -->
 
+    <!-- Robot to be used -->
+  	<arg name="robot_name" default="panda_softhand"/>
+
     <!-- Panda params -->
+    <arg name="panda_arm_enabled" default="true"/>
     <arg name="robot_ip" default="172.16.0.101"/>
     <arg name="load_gripper" default="false"/>
 
@@ -17,10 +21,28 @@
     <arg name="environment_name" default="panda_soma"/>
     <arg name="use_moveit" default="true"/>
 
-    <!-- REAL LAUNCH -->
+    <!-- Set simulation tools -->
+	<arg name="use_gazebo" default="false"/>
+
+    <!-- START LAUNCH -->
 
     <!-- Robot description -->
     <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find adaptive_grasp_controller)/robot/panda_softhand.urdf.xacro'" unless="$(arg load_gripper)" />
+
+    <group if="$(arg use_gazebo)">
+		<!-- Load Gazebo simulation environment -->
+    	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+    	    <arg name="world_name" value="$(find adaptive_grasp_controller)/worlds/$(arg environment_name).world"/>
+    	    <arg name="paused" value="true"/>
+    	    <arg name="use_sim_time" value="true"/>
+    	    <arg name="gui" value="true"/>
+     	   <arg name="headless" value="true"/>
+			<arg name="debug" value="false"/>
+		</include>
+
+		<!-- Spawn the full robot into Gazebo  -->
+    	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model $(arg robot_name) -param robot_description -unpause"/>
+    </group>
 
     <!-- Joint state and robot state publishers of the full robot description -->
 	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
@@ -40,10 +62,12 @@
         <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find adaptive_grasp_controller)/robot/panda_softhand.urdf.xacro'" unless="$(arg load_gripper)" />
 
         <!-- Panda hardware interface -->
-        <node name="franka_control" pkg="franka_control" type="franka_control_node" output="screen" required="true">
-            <rosparam command="load" file="$(find franka_control)/config/franka_control_node.yaml" />
-            <param name="robot_ip" value="$(arg robot_ip)" />
-        </node>
+        <group if="$(arg panda_arm_enabled)">
+            <node name="franka_control" pkg="franka_control" type="franka_control_node" output="screen" required="true">
+                <rosparam command="load" file="$(find franka_control)/config/franka_control_node.yaml" />
+                <param name="robot_ip" value="$(arg robot_ip)" />
+            </node>
+        </group>
 
         <!-- Panda controllers -->
         <rosparam command="load" file="$(find franka_control)/config/default_controllers.yaml" />
@@ -82,6 +106,8 @@
     <!-- Load collision objects into the planning scene -->
   	<node name="sdf_to_planning_scene" pkg="adaptive_grasp_controller" type="sdf_to_planning_scene_node" args="$(find adaptive_grasp_controller)/worlds/$(arg environment_name).world --skipIfco" output="screen"/>
 
+    <rosparam command="load" file="$(find adaptive_grasp_controller)/configs/sh_kuka_controllers.yaml" />
+    
     <!-- Hand namespace -->
     <group ns="right_hand">
         
@@ -95,10 +121,11 @@
             <!-- load the hardware interface for hand in current namespace -->
             <include file="$(find soft_hand_qb_ros_control)/launch/soft_hand_qb_hw.launch"></include>
 
-            <!-- load the hand controllers in current namespace -->
-            <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller joint_trajectory_controller"/>
-
         </group>
+
+        <!-- load the hand controllers in current namespace -->
+        <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller joint_trajectory_controller"/>
+
 
     </group>
 

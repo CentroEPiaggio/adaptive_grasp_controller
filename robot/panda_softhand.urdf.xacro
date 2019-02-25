@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding='utf-8'?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda_softhand">
 
+  <!-- ARGS -->
+  <xacro:arg name="gazebo" default="true"/>
+
   <!-- MODELS -->
-  <xacro:include filename="$(find franka_description)/robots/panda_arm.xacro"/>
+  <!-- <xacro:include filename="$(find franka_description)/robots/panda_arm.xacro"/> -->
+  <xacro:include filename="$(find franka_gazebo)/robots/panda_arm.xacro" >
+  	<xacro:arg name="gazebo" value="${gazebo}"/>
+  </xacro:include>
   <xacro:include filename="$(find soft_hand_description)/model/soft_hand_soma_panda.urdf.xacro"/>
 
   <!-- <link name="world"/> -->
 
   <!-- PANDA ARM -->
-  <xacro:panda_arm />
+  <!-- <xacro:panda_arm /> -->
+  <xacro:panda_arm connected_to='world'/>
 
   <!-- RIGHT SOFTHAND -->
   <xacro:soft_hand_soma_panda parent="panda_link8" name="right_hand" left="false" withAdaptiveTransmission="true" useMimicTag="true">
