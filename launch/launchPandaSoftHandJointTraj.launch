@@ -12,8 +12,8 @@
     <arg name="load_gripper" default="false"/>
 
     <!-- Hand/Glove params -->
-    <arg name="right_hand_enabled" default="true"/>
-    <arg name="launch_qb_interface" default="true"/>
+    <arg name="right_hand_enabled" default="false"/>
+    <arg name="launch_qb_interface" default="false"/>
     <arg name="use_imu" default="false"/>
 
     <!-- Utilities -->
@@ -33,7 +33,7 @@
 		<!-- Load Gazebo simulation environment -->
     	<include file="$(find gazebo_ros)/launch/empty_world.launch">
     	    <arg name="world_name" value="$(find adaptive_grasp_controller)/worlds/$(arg environment_name).world"/>
-    	    <arg name="paused" value="true"/>
+    	    <arg name="paused" value="false"/>
     	    <arg name="use_sim_time" value="true"/>
     	    <arg name="gui" value="true"/>
      	   <arg name="headless" value="true"/>
@@ -41,7 +41,7 @@
 		</include>
 
 		<!-- Spawn the full robot into Gazebo  -->
-    	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model $(arg robot_name) -param robot_description -unpause"/>
+    	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model $(arg robot_name) -param robot_description"/>
     </group>
 
     <!-- Joint state and robot state publishers of the full robot description -->
@@ -70,25 +70,35 @@
         </group>
 
         <!-- Panda controllers -->
-        <rosparam command="load" file="$(find franka_control)/config/default_controllers.yaml" />
-        <node name="state_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="franka_state_controller"/>
-        <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="position_joint_trajectory_controller"/>
-        
-        <!-- Panda state controllers -->
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
-        <node name="joint_state_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
-            <rosparam if="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states, franka_gripper/joint_states] </rosparam>
-            <rosparam unless="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states] </rosparam>
-            <param name="rate" value="30"/>
-        </node>
+        <group if="$(arg use_gazebo)">
+            <rosparam command="load" file="$(find franka_gazebo)/config/sim_controllers.yaml" />
+            <node name="state_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller"/>
+            <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="position_joint_trajectory_controller"/>
+            <node name="joint_state_desired_publisher" pkg="topic_tools" type="relay" args="/panda_arm/joint_states /joint_states_desired" />
+        </group>
+        <group unless="$(arg use_gazebo)">
+            <rosparam command="load" file="$(find franka_control)/config/default_controllers.yaml" />
+            <node name="state_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="franka_state_controller"/>
+            <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="position_joint_trajectory_controller"/>
+            
+            <!-- Panda joint state publisher -->
+            <node name="joint_state_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
+                <rosparam if="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states, franka_gripper/joint_states] </rosparam>
+                <rosparam unless="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states] </rosparam>
+                <param name="rate" value="30"/>
+            </node>
 
-        <!-- Panda desired state publisher -->
-        <node name="joint_state_desired_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
-            <rosparam if="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired, franka_gripper/joint_states] </rosparam>
-            <rosparam unless="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired] </rosparam>
-            <param name="rate" value="30"/>
-            <remap from="/panda_arm/joint_states" to="/joint_states_desired" />
-        </node>
+            <!-- Panda desired state publisher -->
+            <node name="joint_state_desired_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
+                <rosparam if="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired, franka_gripper/joint_states] </rosparam>
+                <rosparam unless="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired] </rosparam>
+                <param name="rate" value="30"/>
+                <remap from="/panda_arm/joint_states" to="/joint_states_desired" />
+            </node>
+        </group>
+
+        <!-- Panda robot state controller -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
 
     </group>
 
@@ -125,7 +135,6 @@
 
         <!-- load the hand controllers in current namespace -->
         <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller joint_trajectory_controller"/>
-
 
     </group>
 

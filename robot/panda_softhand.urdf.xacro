@@ -2,20 +2,25 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda_softhand">
 
   <!-- ARGS -->
-  <xacro:arg name="gazebo" default="true"/>
+  <xacro:arg name="arm_id" default="panda"/>
+  <xacro:arg name="robot_ns" default="panda_arm"/>
 
   <!-- MODELS -->
   <!-- <xacro:include filename="$(find franka_description)/robots/panda_arm.xacro"/> -->
-  <xacro:include filename="$(find franka_gazebo)/robots/panda_arm.xacro" >
-  	<xacro:arg name="gazebo" value="${gazebo}"/>
-  </xacro:include>
+  <xacro:include filename="$(find franka_gazebo)/robots/panda_arm.xacro"/>
   <xacro:include filename="$(find soft_hand_description)/model/soft_hand_soma_panda.urdf.xacro"/>
+  <!-- Gazebo Stuff -->
+  <xacro:include filename="$(find franka_gazebo)/robots/panda_arm.gazebo.xacro"/>
+  <xacro:include filename="$(find franka_gazebo)/robots/panda_arm.transmission.xacro"/>
 
   <!-- <link name="world"/> -->
 
   <!-- PANDA ARM -->
   <!-- <xacro:panda_arm /> -->
   <xacro:panda_arm connected_to='world'/>
+  <!-- PANDA GAZEBO -->
+  <xacro:panda_arm_gazebo arm_id="$(arg arm_id)" robot_ns="$(arg robot_ns)"/>
+  <xacro:panda_arm_transmission arm_id="$(arg arm_id)"/>
 
   <!-- RIGHT SOFTHAND -->
   <xacro:soft_hand_soma_panda parent="panda_link8" name="right_hand" left="false" withAdaptiveTransmission="true" useMimicTag="true">
