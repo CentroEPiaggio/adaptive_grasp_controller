@@ -12,8 +12,8 @@
     <arg name="load_gripper" default="false"/>
 
     <!-- Hand/Glove params -->
-    <arg name="right_hand_enabled" default="false"/>
-    <arg name="launch_qb_interface" default="false"/>
+    <arg name="right_hand_enabled" default="true"/>
+    <arg name="launch_qb_interface" default="true"/>
     <arg name="use_imu" default="false"/>
 
     <!-- Utilities -->
