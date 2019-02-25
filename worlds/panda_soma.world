@@ -7,7 +7,7 @@
 	
 		<!-- box (like a table) -->
     <model name="table">
-			<pose> 0 0 0 0 0</pose>
+			<pose> 0.6 0 -0.025 0 0 0</pose>
 			<static>true</static>
 			<link name='linkTable'>
 				<pose>0 0 0 0 0 0</pose>
@@ -16,7 +16,7 @@
 		 			<pose>0 0 0 0 0 0</pose>
 					<geometry>
 		        <box>
-		          <size>2 1 0.05</size>
+		          <size>1 1 0.05</size>
 		        </box>
 		      </geometry>
 	      </collision>
@@ -24,7 +24,7 @@
 				<visual name="my_visualTable">
 					<geometry>
 		        <box>
-							<size>2 1 0.05</size>
+							<size>1 1 0.05</size>
 		        </box>
 		      </geometry>
 	      </visual>
