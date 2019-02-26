@@ -21,7 +21,7 @@
     <arg name="environment_name" default="panda_soma"/>
     <arg name="use_moveit" default="true"/>
 
-    <!-- Set simulation tools -->
+    <!-- Set simulation tools (NOT YET WORKING) -->
 	<arg name="use_gazebo" default="false"/>
 
     <!-- START LAUNCH -->
