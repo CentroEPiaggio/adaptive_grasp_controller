@@ -6,8 +6,8 @@
   <xacro:arg name="robot_ns" default="panda_arm"/>
 
   <!-- MODELS -->
-  <!-- <xacro:include filename="$(find franka_description)/robots/panda_arm.xacro"/> -->
-  <xacro:include filename="$(find franka_gazebo)/robots/panda_arm.xacro"/>
+  <xacro:include filename="$(find franka_description)/robots/panda_arm.xacro"/>
+  <!-- <xacro:include filename="$(find franka_gazebo)/robots/panda_arm.xacro"/> -->
   <xacro:include filename="$(find soft_hand_description)/model/soft_hand_soma_panda.urdf.xacro"/>
   <!-- Gazebo Stuff -->
   <xacro:include filename="$(find franka_gazebo)/robots/panda_arm.gazebo.xacro"/>
@@ -16,11 +16,12 @@
   <!-- <link name="world"/> -->
 
   <!-- PANDA ARM -->
-  <!-- <xacro:panda_arm /> -->
-  <xacro:panda_arm connected_to='world'/>
+  <xacro:panda_arm />
+  
   <!-- PANDA GAZEBO -->
+  <!-- <xacro:panda_arm connected_to='world'/>
   <xacro:panda_arm_gazebo arm_id="$(arg arm_id)" robot_ns="$(arg robot_ns)"/>
-  <xacro:panda_arm_transmission arm_id="$(arg arm_id)"/>
+  <xacro:panda_arm_transmission arm_id="$(arg arm_id)"/> -->
 
   <!-- RIGHT SOFTHAND -->
   <xacro:soft_hand_soma_panda parent="panda_link8" name="right_hand" left="false" withAdaptiveTransmission="true" useMimicTag="true">
@@ -28,13 +29,13 @@
   </xacro:soft_hand_soma_panda>
 
   <!-- EXTRA ENDEFFECTOR -->
-  <!-- <joint name="right_hand_ee_joint" type="fixed">
-    <origin xyz="0.002 0.00695 0.1" rpy="0 -1.5708 3.1415"/>
-    <parent link="right_hand_panda_flange" />
+  <joint name="right_hand_ee_joint" type="fixed">
+    <origin xyz="0.130 0.000 0.035" rpy="0 0 0"/>
+    <parent link="panda_link8" />
     <child link="right_hand_ee_link" />
   </joint>
 
   <link name="right_hand_ee_link">
-  </link> -->
+  </link>
 
 </robot>
