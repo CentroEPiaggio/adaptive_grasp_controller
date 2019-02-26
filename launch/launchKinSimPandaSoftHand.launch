@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+
+<launch>
+    <!-- LAUNCH ARGUMENTS -->
+
+    <!-- Robot to be used -->
+  	<arg name="robot_name" default="panda_softhand"/>
+
+    <!-- Panda params -->
+    <arg name="load_gripper" default="false" />
+    <arg name="publish_rate" default="30" />
+
+    <!-- Utilities -->
+	<arg name="use_other_utils" default="true"/>
+    <arg name="environment_name" default="panda_soma"/>
+    <arg name="use_moveit" default="true"/>
+
+    <!-- START LAUNCH -->
+
+    <!-- Robot description -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find adaptive_grasp_controller)/robot/$(arg robot_name).urdf.xacro'" unless="$(arg load_gripper)" />
+
+    <!-- Joint state publisher of the simulated robot -->
+    <node name="joint_state_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
+      <param name="rate" value="$(arg publish_rate)" />
+      <rosparam param="source_list">[/simulated_joint_states]</rosparam>
+    </node>
+
+    <!-- Robot state publisher of the simulated robot -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+    <!-- Loading MoveIt interface -->
+	<group if="$(arg use_moveit)">
+		<include file="$(find panda_moveit_config)/launch/move_group.launch">
+            <arg name="allow_trajectory_execution" value="true"/>
+            <arg name="fake_execution" value="true"/>
+            <arg name="info" value="true"/>
+            <arg name="debug" value="false"/>
+            <arg name="load_gripper" value="$(arg load_gripper)"/>
+        </include>
+	</group>
+
+    <!-- Load collision objects into the planning scene -->
+  	<node name="sdf_to_planning_scene" pkg="adaptive_grasp_controller" type="sdf_to_planning_scene_node" args="$(find adaptive_grasp_controller)/worlds/$(arg environment_name).world --skipIfco" output="screen"/>
+
+    <!-- RViz for visualization -->
+    <node pkg="rviz" type="rviz" output="screen" name="rviz" args="-d $(find adaptive_grasp_controller)/configs/panda_soma.rviz"/>
+
+    <!-- Load other utils -->
+    <group if="$(arg use_other_utils)">
+		<!-- Load finger_fk service node -->
+  		<node name="finger_forward_kinematics" pkg="finger_fk" type="finger_fk_main.py" output="screen"/>
+	</group>
+
+</launch>

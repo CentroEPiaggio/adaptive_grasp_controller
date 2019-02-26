@@ -1,0 +1,7 @@
+# Parameters for kinematic simulation of adaptive grasp controller
+
+kinematic_simulation:
+  ARM_TRAJ_TOPIC: /panda_arm/kin_sim_control        # Name of the arm trajectory topic
+  HAND_TRAJ_TOPIC: /right_hand/kin_sim_control      # Name of the hand trajectory topic
+  INITIAL_ARM_JS: 60                                # Initial arm joint configuration
+  INITIAL_HAND_JS: 0.0                              # Initial hand joint configuration (SH synergy joint)
