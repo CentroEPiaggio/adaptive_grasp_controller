@@ -13,7 +13,14 @@
   <xacro:include filename="$(find franka_gazebo)/robots/panda_arm.gazebo.xacro"/>
   <xacro:include filename="$(find franka_gazebo)/robots/panda_arm.transmission.xacro"/>
 
-  <!-- <link name="world"/> -->
+  <!-- WORLD -->
+  <link name="world"/>
+
+  <joint name="world_to_panda_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="world" />
+    <child link="panda_link0" />
+  </joint>
 
   <!-- PANDA ARM -->
   <xacro:panda_arm />
