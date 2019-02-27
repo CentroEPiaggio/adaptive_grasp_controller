@@ -45,8 +45,11 @@ catkin_package(
 include_directories(include ${catkin_INCLUDE_DIRS} /usr/include/eigen3 ${SDFormat_INCLUDE_DIRS})
 link_directories(${SDFormat_LIBRARY_DIRS})
 
-add_executable(adaptive_grasp_controller src/AdaptiveGraspController.cpp src/SlerpControl.cpp)
-target_link_libraries(adaptive_grasp_controller ${catkin_LIBRARIES} ${ROS_LIBRARIES}) 
+add_executable(adaptive_grasp_controller src/AdaptiveGraspController.cpp)
+target_link_libraries(adaptive_grasp_controller ${catkin_LIBRARIES} ${ROS_LIBRARIES})
+
+add_executable(main_server src/main_server.cpp src/SlerpControl.cpp)
+target_link_libraries(main_server ${catkin_LIBRARIES} ${ROS_LIBRARIES})
 
 add_executable(publish_touch_demo_node src/PublishTouchDemo.cpp)
 target_link_libraries(publish_touch_demo_node ${catkin_LIBRARIES} ${ROS_LIBRARIES})
