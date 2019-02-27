@@ -1,0 +1,4 @@
+geometry_msgs/Pose goal_pose
+bool is_goal_relative
+---
+bool answer

@@ -26,11 +26,13 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_service_files(FILES
   adaptive_controller.srv
+  slerp_control.srv
 )
 
 generate_messages(DEPENDENCIES
   std_msgs
   tf
+  geometry_msgs
 )
 
 find_package(SDFormat REQUIRED)
@@ -43,7 +45,7 @@ catkin_package(
 include_directories(include ${catkin_INCLUDE_DIRS} /usr/include/eigen3 ${SDFormat_INCLUDE_DIRS})
 link_directories(${SDFormat_LIBRARY_DIRS})
 
-add_executable(adaptive_grasp_controller src/AdaptiveGraspController.cpp)
+add_executable(adaptive_grasp_controller src/AdaptiveGraspController.cpp src/SlerpControl.cpp)
 target_link_libraries(adaptive_grasp_controller ${catkin_LIBRARIES} ${ROS_LIBRARIES}) 
 
 add_executable(publish_touch_demo_node src/PublishTouchDemo.cpp)
