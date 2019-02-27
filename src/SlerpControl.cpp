@@ -10,8 +10,10 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 #include "SlerpControl.h"
 
 SlerpControl::SlerpControl(ros::NodeHandle& nh_, std::string group_name_, std::string end_effector_name_,  int n_wp_,
-    boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_client_ptr_) : group(group_name) {
+    boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_client_ptr_){
         
+        ROS_INFO("Starting to create SlerpControl object");
+
         // Initializing node handle
         this->nh = nh_;
 
@@ -24,7 +26,9 @@ SlerpControl::SlerpControl(ros::NodeHandle& nh_, std::string group_name_, std::s
 
         // Initializing the arm client
         this->arm_client_ptr = arm_client_ptr_;
-    }
+
+        ROS_INFO("Finished creating SlerpControl object");
+}
 
 SlerpControl::~SlerpControl(){
     
@@ -99,9 +103,12 @@ bool SlerpControl::initialize(geometry_msgs::Pose goal_pose, bool is_goal_relati
 // Performs motion planning for the end-effector towards goal
 bool SlerpControl::performMotionPlan(){
 
+    // Move group interface
+    moveit::planning_interface::MoveGroupInterface group(this->group_name);
+
 	// Printing the planning group frame and the group ee frame
-	if(DEBUG) ROS_INFO("MoveIt Group Reference frame: %s", this->group.getPlanningFrame().c_str());
-	if(DEBUG) ROS_INFO("MoveIt Group End-effector frame: %s", this->group.getEndEffectorLink().c_str());
+	if(DEBUG) ROS_INFO("MoveIt Group Reference frame: %s", group.getPlanningFrame().c_str());
+	if(DEBUG) ROS_INFO("MoveIt Group End-effector frame: %s", group.getEndEffectorLink().c_str());
 
 	// Calling the waypoint creator with start and goal poses
 	std::vector<geometry_msgs::Pose> cart_waypoints;
@@ -109,7 +116,7 @@ bool SlerpControl::performMotionPlan(){
 
 	// Planning for the waypoints path
 	moveit_msgs::RobotTrajectory trajectory;
-	double fraction = this->group.computeCartesianPath(cart_waypoints, 0.01, 0.0, trajectory);
+	double fraction = group.computeCartesianPath(cart_waypoints, 0.01, 0.0, trajectory);
     this->computed_trajectory = trajectory.joint_trajectory;
 
 	ROS_INFO("Plan (cartesian path) (%.2f%% acheived)", fraction * 100.0);

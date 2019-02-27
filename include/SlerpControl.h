@@ -65,9 +65,6 @@ class SlerpControl {
         // The arm action client
         boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_client_ptr;
 
-        // Move group interface
-        moveit::planning_interface::MoveGroupInterface group;
-
         // Tf listener and transform and the tmp eigen
 	    tf::TransformListener tf_listener;
         tf::StampedTransform stamp_ee_transform;
