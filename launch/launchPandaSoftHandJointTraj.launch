@@ -47,9 +47,9 @@
     <!-- Joint state and robot state publishers of the full robot description -->
 	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
 		<!-- FOR USING JOINT STATE PUBLISER FOR GETTING FINGER JOINT STATES -->
-		<rosparam param="source_list">[/panda_arm/joint_states,/right_hand/joint_states]</rosparam>
+		<rosparam param="source_list">[/joint_states_desired]</rosparam>
 		<!-- FOR USING FINGER FK PACKAGE FOR GETTING FINGER JOINT STATES -->
-		<!-- <rosparam param="source_list">[/right_arm/joint_states,/all_hand_joint_states]</rosparam> -->
+		<!-- <rosparam param="source_list">[/panda_arm/joint_states,/all_hand_joint_states]</rosparam> -->
         <param name="rate" value="30"/>
 	</node>
 
@@ -91,14 +91,11 @@
             <!-- Panda desired state publisher -->
             <node name="joint_state_desired_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
                 <rosparam if="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired, franka_gripper/joint_states] </rosparam>
-                <rosparam unless="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired] </rosparam>
+                <rosparam unless="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired, /right_hand/joint_states] </rosparam>
                 <param name="rate" value="30"/>
                 <remap from="/panda_arm/joint_states" to="/joint_states_desired" />
             </node>
         </group>
-
-        <!-- Panda robot state controller -->
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
 
     </group>
 
