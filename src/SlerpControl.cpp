@@ -9,6 +9,8 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 
 #include "SlerpControl.h"
 
+#include <moveit_visual_tools/moveit_visual_tools.h>
+
 SlerpControl::SlerpControl(ros::NodeHandle& nh_, std::string group_name_, std::string end_effector_name_,  int n_wp_,
     boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_client_ptr_){
         
@@ -109,6 +111,24 @@ bool SlerpControl::performMotionPlan(){
     // Move group interface
     moveit::planning_interface::MoveGroupInterface group(this->group_name);
 
+    /* If VISUAL is enabled*/
+    #ifdef VISUAL
+
+    ros::spinOnce();
+
+    // Getting the robot joint model
+    const robot_state::JointModelGroup* joint_model_group = group.getCurrentState()->getJointModelGroup(this->group_name);
+
+    // Visual tools
+    moveit_visual_tools::MoveItVisualTools visual_tools("world");
+    visual_tools.deleteAllMarkers();
+
+    // Loading the remote control for visual tools and promting a message
+    visual_tools.loadRemoteControl();
+    visual_tools.trigger();
+
+    #endif
+
 	// Printing the planning group frame and the group ee frame
 	if(DEBUG) ROS_INFO("MoveIt Group Reference frame: %s", group.getPlanningFrame().c_str());
 	if(DEBUG) ROS_INFO("MoveIt Group End-effector frame: %s", group.getEndEffectorLink().c_str());
@@ -128,6 +148,17 @@ bool SlerpControl::performMotionPlan(){
 	if(fraction != 1.0) return false;
 
     std::cout << "FOUND COMPLETE PLAN FOR WAYPOINTS!!!" << std::endl;
+
+    /* If VISUAL is enabled*/
+    #ifdef VISUAL
+
+    ROS_INFO("Visualizing the computed plan as trajectory line.");
+    visual_tools.publishAxisLabeled(cart_waypoints.back(), "goal pose");
+    visual_tools.publishTrajectoryLine(trajectory, joint_model_group);
+    visual_tools.trigger();
+    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to execute the motion on the robot.");
+
+    #endif
 
     return true;
 }
