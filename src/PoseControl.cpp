@@ -108,6 +108,22 @@ bool PoseControl::performMotionPlan(){
     // Move group interface
     moveit::planning_interface::MoveGroupInterface group(this->group_name);
 
+    /* If VISUAL is enabled*/
+    #ifdef VISUAL
+
+    // Getting the robot joint model
+    const robot_state::JointModelGroup* joint_model_group = group.getCurrentState()->getJointModelGroup(this->group_name);
+
+    // Visual tools
+    moveit_visual_tools::MoveItVisualTools visual_tools("world");
+    visual_tools.deleteAllMarkers();
+
+    // Loading the remote control for visual tools and promting a message
+    visual_tools.loadRemoteControl();
+    visual_tools.trigger();
+
+    #endif
+
 	// Printing the planning group frame and the group ee frame
 	if(DEBUG) ROS_INFO("MoveIt Group Reference frame: %s", group.getPlanningFrame().c_str());
 	if(DEBUG) ROS_INFO("MoveIt Group End-effector frame: %s", group.getEndEffectorLink().c_str());
@@ -116,15 +132,26 @@ bool PoseControl::performMotionPlan(){
     group.setPoseTarget(this->goalPose);
 
     // Planning to Pose
-    moveit::planning_interface::MoveGroupInterface::Plan plan;
-    bool success = (group.plan(plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+    bool success = (group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     ROS_INFO("Motion Plan towards goal pose %s.", success ? "SUCCEDED" : "FAILED");
 
     // If complete path is not achieved return false, true otherwise
 	if(!success) return false;
 
+    /* If VISUAL is enabled*/
+    #ifdef VISUAL
+
+    ROS_INFO("Visualizing the computed plan as trajectory line.");
+    visual_tools.publishAxisLabeled(this->goalPose, "goal pose");
+    visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
+    visual_tools.trigger();
+    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to execute the motion on the robot.");
+
+    #endif
+
     // Saving the computed trajectory and returning true
-    this->computed_trajectory = plan.trajectory_.joint_trajectory;
+    this->computed_trajectory = my_plan.trajectory_.joint_trajectory;
     return true;
 }
 

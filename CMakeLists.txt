@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_msgs
   moveit_ros_planning 
   moveit_ros_planning_interface
+  moveit_visual_tools
   interactive_markers 
   visualization_msgs
   moveit_core

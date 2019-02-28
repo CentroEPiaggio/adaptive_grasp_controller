@@ -26,6 +26,7 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 
 // Defines
 #define     DEBUG   1       // Prints out additional stuff
+#define     VISUAL  1       // Publishes visual info on RViz
 
 class PoseControl {
 
