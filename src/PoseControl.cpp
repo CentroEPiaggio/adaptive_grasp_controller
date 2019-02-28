@@ -111,6 +111,8 @@ bool PoseControl::performMotionPlan(){
     /* If VISUAL is enabled*/
     #ifdef VISUAL
 
+    ros::spinOnce();
+
     // Getting the robot joint model
     const robot_state::JointModelGroup* joint_model_group = group.getCurrentState()->getJointModelGroup(this->group_name);
 
@@ -130,6 +132,8 @@ bool PoseControl::performMotionPlan(){
 
     // Setting the pose target of the move group
     group.setPoseTarget(this->goalPose);
+
+    if(DEBUG) ROS_INFO("Done setting the target pose in MoveIt Group.");
 
     // Planning to Pose
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
