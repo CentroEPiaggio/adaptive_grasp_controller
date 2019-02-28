@@ -50,14 +50,24 @@ int main(int argc, char **argv)
 
     ROS_INFO("Setting the rate");
 
-    ros::Rate loop_rate(50);
+    // ros::Rate loop_rate(50);
 
-    ROS_INFO("The main service server is running");
+    ROS_INFO("The main service server is running. Running as fast as possible!");
 
-    while(ros::ok()) {
-        ros::spinOnce();
-        loop_rate.sleep();
+    // while(ros::ok()) {
+    //     ros::spinOnce();
+    //     loop_rate.sleep();
+    // }
+
+    // ROS Async spinner (necessary for processing callbacks inside the service callbacks)
+    ros::AsyncSpinner spinner(4);
+    spinner.start();
+
+    while(ros::ok()){
+        // Nothing to do here
     }
+
+    spinner.stop();
 
     return 0;
 }
