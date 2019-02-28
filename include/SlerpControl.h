@@ -1,4 +1,4 @@
-/* SLERP CONTROLLER - Uses SLERP interpolation between presnt ee pose and goal pose to create homogeneous motion
+/* SLERP CONTROL - Uses SLERP interpolation between presnt ee pose and goal pose to create homogeneous motion
 Authors: George Jose Pollayil - Mathew Jose Pollayil
 Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 
@@ -39,7 +39,7 @@ class SlerpControl {
         // This is the callback function of the slerp control service
 	  	bool call_slerp_control(adaptive_grasp_controller::slerp_control::Request &req, adaptive_grasp_controller::slerp_control::Response &res);
 
-	  	// Initialize the things for motion planning. Is called by the callback
+	  	// Initialize the things for motion planning. It is called by the callback
 	  	bool initialize(geometry_msgs::Pose goal_pose, bool is_goal_relative);
 
 		// Performs motion planning for the end-effector towards goal

@@ -1,4 +1,4 @@
-/* KUKA SLERP CONTROLLER - Uses SLERP interpolation between ee pose and goal pose to create homogeneous motion
+/* SLERP CONTROL - Uses SLERP interpolation between ee pose and goal pose to create homogeneous motion
 Authors: George Jose Pollayil - Mathew Jose Pollayil
 Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 
@@ -40,18 +40,21 @@ bool SlerpControl::call_slerp_control(adaptive_grasp_controller::slerp_control::
 
     // Setting up things
     if(!this->initialize(req.goal_pose, req.is_goal_relative)){
+        ROS_ERROR("Could not initialize SlerpControl object. Returning...");
         res.answer = false;
         return false;
     }
 
 	// Perform motion plan towards the goal pose
     if(!this->performMotionPlan()){
+        ROS_ERROR("Could not perform motion planning in SlerpControl object. Returning...");
         res.answer = false;
         return false;
     }
 
     // Send computed joint motion
     if(!this->sendJointTrajectory(this->computed_trajectory)){
+        ROS_ERROR("Could not send computed trajectory from SlerpControl object. Returning...");
         res.answer = false;
         return false;
     }
