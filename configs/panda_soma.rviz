@@ -8,6 +8,7 @@ Panels:
         - /Status1
         - /PlanningScene1
         - /TF1
+        - /Planned Trajectory1
       Splitter Ratio: 0.470842332
     Tree Height: 691
   - Class: rviz/Selection
@@ -708,6 +709,15 @@ Visualization Manager:
                                             {}
       Update Interval: 0
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /rviz_visual_tools
+      Name: Planned Trajectory
+      Namespaces:
+        Text: true
+        goal pose: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -748,10 +758,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.705397546
+      Pitch: 0.0903978124
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.99357796
+      Yaw: 5.65857649
     Saved: ~
 Window Geometry:
   Displays:
