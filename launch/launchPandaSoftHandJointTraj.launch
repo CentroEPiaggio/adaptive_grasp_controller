@@ -8,12 +8,12 @@
 
     <!-- Panda params -->
     <arg name="panda_arm_enabled" default="true"/>
-    <arg name="robot_ip" default="172.16.0.101"/>
+    <arg name="robot_ip" default="172.16.0.102"/>
     <arg name="load_gripper" default="false"/>
 
     <!-- Hand/Glove params -->
-    <arg name="right_hand_enabled" default="true"/>
-    <arg name="launch_qb_interface" default="true"/>
+    <arg name="right_hand_enabled" default="false"/>
+    <arg name="launch_qb_interface" default="false"/>
     <arg name="use_imu" default="false"/>
 
     <!-- Utilities -->
