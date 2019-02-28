@@ -107,19 +107,13 @@ void HandControl::computeTrajectory(double present_syn, double goal_syn, double 
     traj.header.stamp = ros::Time::now();
     trajectory_msgs::JointTrajectoryPoint point;
 
-    // Does hand need to be opened or closed?
-    bool hand_closed = (goal_syn > present_syn);
 
     // Generating waypoints
     for(int i = 1; i <= real_n_wp; i++){
 
         //Computing the position according to hand closing or opening
         double position;
-        if(hand_closed){
-            position = present_syn + ( (double (i) / double (real_n_wp)) * (goal_syn - present_syn) );
-        } else {
-            position = present_syn - ( (double (i) / double (real_n_wp)) * (goal_syn - present_syn) );
-        }
+        position = present_syn + ( (double (i) / double (real_n_wp)) * (goal_syn - present_syn) );
 
         // Computing the time for the waypoint
         double time_wp = (double (i) / double (real_n_wp)) * time;
