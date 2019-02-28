@@ -11,7 +11,7 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 
 #include <moveit_visual_tools/moveit_visual_tools.h>
 
-PoseControl::PoseControl(ros::NodeHandle& nh_, std::string group_name_, std::string end_effector_name_,  int n_wp_,
+PoseControl::PoseControl(ros::NodeHandle& nh_, std::string group_name_, std::string end_effector_name_,
     boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_client_ptr_){
         
         ROS_INFO("Starting to create PoseControl object");

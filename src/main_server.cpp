@@ -8,6 +8,7 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 // Object Includes
 #include "HandControl.h"
 #include "SlerpControl.h"
+#include "PoseControl.h"
 
 /**********************************************
 ROS NODE MAIN SERVICE SERVERS 
@@ -37,10 +38,15 @@ int main(int argc, char **argv)
 
     HandControl hand_control_obj(nh_, 20, "right_hand_synergy_joint", hand_client_ptr_);
 
+     ROS_INFO("Creating the pose control object");
+
+    PoseControl pose_control_obj(nh_, "panda_arm", "right_hand_synergy_joint", arm_client_ptr_);
+
     ROS_INFO("Advertising the services");
 
     ros::ServiceServer slerp_service = nh_.advertiseService("slerp_control_service", &SlerpControl::call_slerp_control, &slerp_control_obj);
     ros::ServiceServer hand_service = nh_.advertiseService("hand_control_service", &HandControl::call_hand_control, &hand_control_obj);
+    ros::ServiceServer pose_service = nh_.advertiseService("pose_control_service", &PoseControl::call_pose_control, &pose_control_obj);
 
     ROS_INFO("Setting the rate");
 

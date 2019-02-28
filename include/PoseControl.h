@@ -32,7 +32,7 @@ class PoseControl {
 
     /// public variables and functions ------------------------------------------------------------
 	public:
-		PoseControl(ros::NodeHandle& nh_, std::string group_name_, std::string end_effector_name_, int n_wp_,
+		PoseControl(ros::NodeHandle& nh_, std::string group_name_, std::string end_effector_name_,
             boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_client_ptr_);
 
         ~PoseControl();
