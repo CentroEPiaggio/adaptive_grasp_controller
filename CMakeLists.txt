@@ -27,6 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_service_files(FILES
   adaptive_controller.srv
   slerp_control.srv
+  hand_control.srv
 )
 
 generate_messages(DEPENDENCIES
@@ -48,7 +49,7 @@ link_directories(${SDFormat_LIBRARY_DIRS})
 add_executable(adaptive_grasp_controller src/AdaptiveGraspController.cpp)
 target_link_libraries(adaptive_grasp_controller ${catkin_LIBRARIES} ${ROS_LIBRARIES})
 
-add_executable(main_server src/main_server.cpp src/SlerpControl.cpp)
+add_executable(main_server src/main_server.cpp src/SlerpControl.cpp src/HandControl.cpp)
 target_link_libraries(main_server ${catkin_LIBRARIES} ${ROS_LIBRARIES})
 
 add_executable(publish_touch_demo_node src/PublishTouchDemo.cpp)
