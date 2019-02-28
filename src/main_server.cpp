@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 
      ROS_INFO("Creating the pose control object");
 
-    PoseControl pose_control_obj(nh_, "panda_arm", "right_hand_synergy_joint", arm_client_ptr_);
+    PoseControl pose_control_obj(nh_, "panda_arm", "right_hand_ee_link", arm_client_ptr_);
 
     ROS_INFO("Advertising the services");
 
