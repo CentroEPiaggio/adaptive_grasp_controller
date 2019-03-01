@@ -39,11 +39,18 @@
 using namespace std;
 
 
-AdaptiveControl::AdaptiveControl(ros::NodeHandle& nh):n(nh){
+AdaptiveControl::AdaptiveControl(ros::NodeHandle& nh, 
+			boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_client,
+				boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> hand_client):n(nh){
+	// Setting visual tools
 	if(!visual_tools_){
 		if(DEBUG) std::cout << "RVIZ: Resetting Visual Tools!!!" << std::endl;
 		visual_tools_.reset(new rviz_visual_tools::RvizVisualTools("world","/rviz_visual_markers"));
 	}
+
+	// Setting the action clients
+	joint_client = arm_client;
+	move_ = hand_client;
 }
 
 AdaptiveControl::~AdaptiveControl(){
@@ -59,8 +66,10 @@ void AdaptiveControl::fingerColCallback(const std_msgs::Int8::ConstPtr& msg){
 int AdaptiveControl::startClosingHand(){
 	ROS_INFO("Starting to close hand!\n");
 
-	// Starting to close the hand
-	move_ = std::make_shared<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>>("/" + string(HAND_NAME) + "/joint_trajectory_controller/follow_joint_trajectory", true);
+	// Checking is hand action client is connected for starting to close the hand
+	if(!move_->waitForServer(ros::Duration(1,0))){
+		ROS_ERROR("Cannot connect to the hand action client!\n");
+	}
 
 	// Listening to topic for finger collision
 	touching_finger = 0;
@@ -615,7 +624,7 @@ void AdaptiveControl::sendHandTrajectoryWithTiming(double increment, trajectory_
 }
 
 /* ******************************************************************************************** */
-void AdaptiveControl::stopArmWhenCollision(actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> *arm_joint_client){
+void AdaptiveControl::stopArmWhenCollision(boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_joint_client){
 	ROS_INFO("I'm listening for further finger collisions or arm collision!\n");
 
 	// Some needed data
@@ -673,10 +682,10 @@ void AdaptiveControl::stopArmWhenCollision(actionlib::SimpleActionClient<control
 
 /* ******************************************************************************************** */
 void AdaptiveControl::sendJointTrajectory(trajectory_msgs::JointTrajectory trajectory) {
-	// Create the action client for the arm
-	joint_client = new actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>("/" + string(ARM_NAME) + "/position_joint_trajectory_controller/follow_joint_trajectory/", true);
-
-	joint_client->waitForServer();
+	// Checking if the action client for the arm is connected
+	if(!joint_client->waitForServer(ros::Duration(1,0))){
+		ROS_ERROR("Cannot connect to the arm action client!\n");
+	}
 
 	// Not setting time (oscillating problem)
 
@@ -721,8 +730,6 @@ void AdaptiveControl::sendJointTrajectory(trajectory_msgs::JointTrajectory traje
 		delete psm;
 		psm = NULL;
 	}
-
-	delete joint_client;
 
 	cout << "FINISHED EVERYTHING: TERMINATING CONTROLLER!" << endl;
 }

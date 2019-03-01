@@ -45,8 +45,8 @@ int main(int argc, char **argv)
 
     ROS_INFO("Creating the adaptive control object");
 
-    AdaptiveControl adaptive_control_obj(nh_); // NEEDS MODIFICATION (mainly to get actionclients from outside)
-
+    AdaptiveControl adaptive_control_obj(nh_, arm_client_ptr_, hand_client_ptr_); 
+    
     ROS_INFO("Advertising the services");
 
     ros::ServiceServer slerp_service = nh_.advertiseService("slerp_control_service", &SlerpControl::call_slerp_control, &slerp_control_obj);

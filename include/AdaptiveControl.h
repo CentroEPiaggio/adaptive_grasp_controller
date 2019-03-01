@@ -61,21 +61,26 @@ class AdaptiveControl {
 	  	int finger_id;											// Id of finger in collision
 
 	  	// Action client ptr for hand
-	  	std::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> move_;
+		boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> move_;
+
 	  	// Action client ptr for arm
-	  	actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> *joint_client;
+		boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> joint_client;
+
 	  	// Service client for finger_fk_service
 	  	ros::ServiceClient fk_client = n.serviceClient<finger_fk::FingerFkService>("finger_fk_service");
+
 	  	// Subscribing to handle finger collision
 		ros::Subscriber finger_col_sub;
+		
 		// Creating a ROS publisher for sending the trajectory to external node for WAM robot
 		ros::Publisher pub_traj_to_topic = n.advertise<trajectory_msgs::JointTrajectory>("from_adaptive_grasp_controller", 1);
+
 		// RViz visual tools
 		rviz_visual_tools::RvizVisualToolsPtr visual_tools_;
 
-		const float abd_closed[5] = {0.268, -0.031, 0.007, 0.045, 0.083}; 	// Closed hand abd_joint values
 
 		// Adaptive control variables
+		const float abd_closed[5] = {0.268, -0.031, 0.007, 0.045, 0.083}; 	// Closed hand abd_joint values
 		std::string ARM_NAME; 												// Name of the arm (namespace of arm joint_trajectory_controller)
 		std::string MOVEIT_GROUP; 											// Name of the MoveIt! MoveGroup of the arm, as in srdf
 		std::string HAND_NAME; 												// Name of the hand (namespace of hand joint_trajectory_controller)
@@ -110,7 +115,9 @@ class AdaptiveControl {
 	  
 	/// public functions --------------------------------------------------------------------------
 	public:
-		AdaptiveControl(ros::NodeHandle& nh);
+		AdaptiveControl(ros::NodeHandle& nh, 
+			boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_client,
+				boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> hand_client);
 
 		~AdaptiveControl();
 
@@ -174,7 +181,7 @@ class AdaptiveControl {
 		void sendHandTrajectoryWithTiming(double increment, trajectory_msgs::JointTrajectory ext_trajectory);
 
 		// While performing compensating movement stop if arm in collision or other finger comes to contact
-		void stopArmWhenCollision(actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> *arm_joint_client);
+		void stopArmWhenCollision(boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_joint_client);
 
 		// Sends trajectory to the joint_trajectory_controller of both arm and hand
 		void sendJointTrajectory (trajectory_msgs::JointTrajectory trajectory);
