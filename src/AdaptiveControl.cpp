@@ -42,6 +42,9 @@ using namespace std;
 AdaptiveControl::AdaptiveControl(ros::NodeHandle& nh, 
 			boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_client,
 				boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> hand_client):n(nh){
+	
+	ROS_INFO("Starting to create AdaptiveControl object");
+	
 	// Setting visual tools
 	if(!visual_tools_){
 		if(DEBUG) std::cout << "RVIZ: Resetting Visual Tools!!!" << std::endl;
@@ -51,6 +54,8 @@ AdaptiveControl::AdaptiveControl(ros::NodeHandle& nh,
 	// Setting the action clients
 	joint_client = arm_client;
 	move_ = hand_client;
+
+	ROS_INFO("Finished creating AdaptiveControl object");
 }
 
 AdaptiveControl::~AdaptiveControl(){
