@@ -38,7 +38,10 @@ class PandaSoftHandClient {
         bool call_joint_service(std::vector<double> joint_goal);
 
         // Service call function for pose control
-        bool call_pose_service(std::vector<double> pose_goal);
+        bool call_pose_service(geometry_msgs::Pose goal_pose, bool is_goal_relative);
+
+        // Service call function for slerp control
+        bool call_slerp_service(geometry_msgs::Pose goal_pose, bool is_goal_relative);
 
 
 	/// private variables -------------------------------------------------------------------------

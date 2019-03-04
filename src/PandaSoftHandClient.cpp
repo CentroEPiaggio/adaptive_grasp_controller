@@ -87,3 +87,37 @@ bool PandaSoftHandClient::call_joint_service(std::vector<double> joint_goal){
 
     return joint_control_srv.response.answer;
 }
+
+// Service call function for pose control
+bool PandaSoftHandClient::call_pose_service(geometry_msgs::Pose goal_pose, bool is_goal_relative){
+
+    // Creating and filling up the request
+    adaptive_grasp_controller::pose_control pose_control_srv;
+    pose_control_srv.request.goal_pose = goal_pose;
+    pose_control_srv.request.is_goal_relative = is_goal_relative;
+
+    // Calling the service
+    if(!this->pose_client.call(pose_control_srv)){
+        ROS_ERROR("Failed to contact the pose control server. Returning...");
+        return false;
+    }
+
+    return pose_control_srv.response.answer;
+}
+
+// Service call function for slerp control
+bool PandaSoftHandClient::call_slerp_service(geometry_msgs::Pose goal_pose, bool is_goal_relative){
+
+    // Creating and filling up the request
+    adaptive_grasp_controller::slerp_control slerp_control_srv;
+    slerp_control_srv.request.goal_pose = goal_pose;
+    slerp_control_srv.request.is_goal_relative = is_goal_relative;
+
+    // Calling the service
+    if(!this->pose_client.call(slerp_control_srv)){
+        ROS_ERROR("Failed to contact the slerp control server. Returning...");
+        return false;
+    }
+
+    return slerp_control_srv.response.answer;
+}
