@@ -24,9 +24,14 @@ class PandaSoftHandClient {
 
     /// public variables and functions ------------------------------------------------------------
 	public:
+        PandaSoftHandClient();
+
 		PandaSoftHandClient(ros::NodeHandle& nh_);
 
         ~PandaSoftHandClient();
+
+        // Initializing function
+        bool initialize(ros::NodeHandle& nh_);
 
         // Service call function for adaptive control
         bool call_adaptive_service(bool run);
@@ -42,7 +47,6 @@ class PandaSoftHandClient {
 
         // Service call function for slerp control
         bool call_slerp_service(geometry_msgs::Pose goal_pose, bool is_goal_relative);
-
 
 	/// private variables -------------------------------------------------------------------------
 	private:

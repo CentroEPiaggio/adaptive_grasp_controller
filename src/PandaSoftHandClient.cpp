@@ -5,7 +5,27 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 
 #include "PandaSoftHandClient.h"
 
+PandaSoftHandClient::PandaSoftHandClient(){
+
+    // Nothing to do here
+}
+
 PandaSoftHandClient::PandaSoftHandClient(ros::NodeHandle& nh_){
+
+    // Initializing object
+    if(!this->initialize(nh_)){
+        ROS_ERROR("The PandaSoftHandClient was not initialized successfully. Some servers are missing...");
+        ros::shutdown();
+    } 
+}
+
+PandaSoftHandClient::~PandaSoftHandClient(){
+    
+    // Nothing to do here yet
+}
+
+// Initializing function
+bool PandaSoftHandClient::initialize(ros::NodeHandle& nh_){
 
     // Initializing node handle
     this->nh = nh_;
@@ -18,25 +38,23 @@ PandaSoftHandClient::PandaSoftHandClient(ros::NodeHandle& nh_){
     this->slerp_service_name = "slerp_control_service";
 
     // Initializing service clients after waiting
-    ros::service::waitForService(this->adaptive_service_name, ros::Duration(1.0));
+    if(!ros::service::waitForService(this->adaptive_service_name, ros::Duration(1.0))) return false;
     this->adaptive_client = this->nh.serviceClient<adaptive_grasp_controller::adaptive_control>(this->adaptive_service_name);
 
-    ros::service::waitForService(this->hand_service_name, ros::Duration(1.0));
+    if(!ros::service::waitForService(this->hand_service_name, ros::Duration(1.0))) return false;
     this->hand_client = this->nh.serviceClient<adaptive_grasp_controller::hand_control>(this->hand_service_name);
 
-    ros::service::waitForService(this->joint_service_name, ros::Duration(1.0));
+    if(!ros::service::waitForService(this->joint_service_name, ros::Duration(1.0))) return false;
     this->joint_client = this->nh.serviceClient<adaptive_grasp_controller::joint_control>(this->joint_service_name);
 
-    ros::service::waitForService(this->pose_service_name, ros::Duration(1.0));
+    if(!ros::service::waitForService(this->pose_service_name, ros::Duration(1.0))) return false;
     this->pose_client = this->nh.serviceClient<adaptive_grasp_controller::pose_control>(this->pose_service_name);
 
-    ros::service::waitForService(this->slerp_service_name, ros::Duration(1.0));
+    if(!ros::service::waitForService(this->slerp_service_name, ros::Duration(1.0))) return false;
     this->slerp_client = this->nh.serviceClient<adaptive_grasp_controller::slerp_control>(this->slerp_service_name);
-}
 
-PandaSoftHandClient::~PandaSoftHandClient(){
-    
-    // Nothing to do here yet
+    // At this point initializing completed
+    return true;
 }
 
 // Service call function for adaptive control
