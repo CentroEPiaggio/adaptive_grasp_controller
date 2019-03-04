@@ -2,6 +2,7 @@
 Authors: George Jose Pollayil - Mathew Jose Pollayil
 Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 
+#include "parsing_utilities.h"
 #include "TaskSequencer.h"
 
 TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
@@ -19,8 +20,7 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
 
     // Parsing the task params
     if(!this->parse_task_params()){
-        ROS_ERROR("The parsing of task parameters went wrong. Returning...");
-        ros::shutdown();
+        ROS_ERROR("The parsing of task parameters went wrong. Be careful, using default values...");
     }
 
     // Advertising the services
@@ -44,8 +44,46 @@ bool TaskSequencer::parse_task_params(){
 		success = false;
 	}
 
+    if(!ros::param::get("/task_sequencer/grasp_transform", this->grasp_transform)){
+		ROS_WARN("The param 'grasp_transform' not found in param server! Using default.");
+		this->grasp_transform.resize(6);
+        std::fill(this->grasp_transform.begin(), this->grasp_transform.end(), 0.0);
+		success = false;
+	}
+
+    // Converting the grasp_transform vector to geometry_msgs Pose
+    this->grasp_T = this->convert_vector_to_pose(this->grasp_transform);
+
+    if(!ros::param::get("/task_sequencer/pre_grasp_transform", this->pre_grasp_transform)){
+		ROS_WARN("The param 'pre_grasp_transform' not found in param server! Using default.");
+		this->pre_grasp_transform.resize(6);
+        std::fill(this->pre_grasp_transform.begin(), this->pre_grasp_transform.end(), 0.0);
+		success = false;
+	}
+
     return success;
 }
+
+// Convert xyzrpy vector to geometry_msgs Pose
+geometry_msgs::Pose TaskSequencer::convert_vector_to_pose(std::vector<double> input_vec){
+    
+    // Creating temporary variables
+    geometry_msgs::Pose output_pose;
+    Eigen::Affine3d output_affine;
+
+    // Getting translation and rotation
+    Eigen::Vector3d translation(input_vec[0], input_vec[1], input_vec[2]);
+    output_affine.translation() = translation;
+    Eigen::Matrix3f rotation = Eigen::AngleAxisf(input_vec[5], Eigen::Vector3d::UnitZ())
+        * Eigen::AngleAxisf(input_vec[4], Eigen::Vector3d::UnitY())
+        * Eigen::AngleAxisf(input_vec[3], Eigen::Vector3d::UnitX());
+    output_affine.linear() = rotation;    
+    
+    // Converting to geometry_msgs and returning
+    tf::poseEigenToMsg(output_affine, output_pose);
+    return output_pose;
+}
+
 
 // Callback for adaptive grasp task service
 bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res){
@@ -64,6 +102,8 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
         res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
         return false;
     }
+
+    // Getting the 
 
     res.success = true;
     res.message = "The service call_adaptive_grasp_task was correctly performed!";
