@@ -24,7 +24,7 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
     }
 
     // Advertising the services
-    this->nh.advertiseService(this->adaptive_task_service_name, &TaskSequencer::call_adaptive_grasp_task, this);
+    this->adaptive_task_server = this->nh.advertiseService(this->adaptive_task_service_name, &TaskSequencer::call_adaptive_grasp_task, this);
 
 }
 
