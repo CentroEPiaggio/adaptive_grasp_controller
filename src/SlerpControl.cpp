@@ -183,7 +183,7 @@ void SlerpControl::computeWaypointsFromPoses(const Eigen::Affine3d& start_pose, 
     if(DEBUG) ROS_INFO_STREAM("The norm of the diff_vec is " << diff_vec.norm() << 
         ", so the new number of waypoints is " << this->real_n_wp << ".");
 
-	for(int j = 1; j <= this->n_wp; j++){
+	for(int j = 1; j <= this->real_n_wp; j++){
 		wp_eigen.translation() = start_vec + (diff_vec / this->real_n_wp) * j;
 		diff_quat = start_quat.slerp(double(j)/double(this->real_n_wp), goal_quat);
 		wp_eigen.linear() = diff_quat.toRotationMatrix();
