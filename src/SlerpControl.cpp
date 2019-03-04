@@ -111,10 +111,10 @@ bool SlerpControl::performMotionPlan(){
     // Move group interface
     moveit::planning_interface::MoveGroupInterface group(this->group_name);
 
-    /* If VISUAL is enabled*/
+    /* If VISUAL is enabled */
     #ifdef VISUAL
 
-    ros::spinOnce();
+    ros::spinOnce();        // May not be necessary
 
     // Getting the robot joint model
     const robot_state::JointModelGroup* joint_model_group = group.getCurrentState()->getJointModelGroup(this->group_name);
@@ -149,7 +149,7 @@ bool SlerpControl::performMotionPlan(){
 
     std::cout << "FOUND COMPLETE PLAN FOR WAYPOINTS!!!" << std::endl;
 
-    /* If VISUAL is enabled*/
+    /* If VISUAL is enabled */
     #ifdef VISUAL
 
     ROS_INFO("Visualizing the computed plan as trajectory line.");
