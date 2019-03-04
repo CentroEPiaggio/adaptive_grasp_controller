@@ -7,6 +7,7 @@ set(CMAKE_BUILD_TYPE Debug)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  std_srvs
   rviz
   rviz_visual_tools
   message_generation
@@ -54,6 +55,7 @@ set(OBJECTS_SOURCE_FILES
   src/AdaptiveControl.cpp 
   src/JointControl.cpp
   src/PandaSoftHandClient.cpp
+  src/TaskSequencer.cpp
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS} /usr/include/eigen3 ${SDFormat_INCLUDE_DIRS})
@@ -64,6 +66,9 @@ target_link_libraries(adaptive_grasp_controller ${catkin_LIBRARIES} ${ROS_LIBRAR
 
 add_executable(main_server src/main_server.cpp ${OBJECTS_SOURCE_FILES})
 target_link_libraries(main_server ${catkin_LIBRARIES} ${ROS_LIBRARIES})
+
+add_executable(main_client src/main_client.cpp ${OBJECTS_SOURCE_FILES})
+target_link_libraries(main_client ${catkin_LIBRARIES} ${ROS_LIBRARIES})
 
 add_executable(publish_touch_demo_node src/PublishTouchDemo.cpp)
 target_link_libraries(publish_touch_demo_node ${catkin_LIBRARIES} ${ROS_LIBRARIES})
