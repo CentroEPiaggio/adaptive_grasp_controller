@@ -61,7 +61,8 @@ class SlerpControl {
         std::string group_name;                                 // Name of the MoveIt group
 
         // Number of waypoints for slerp interpolation
-        int n_wp;
+        int n_wp;                                               // Number of wp to be used for a translation of 1 meter
+        int real_n_wp;                                          // Number of wp for requested motion (proportional to n_wp)
 
         // The arm action client
         boost::shared_ptr<actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>> arm_client_ptr;

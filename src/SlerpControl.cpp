@@ -166,7 +166,7 @@ bool SlerpControl::performMotionPlan(){
 // Computes waypoints using SLERP from two poses
 void SlerpControl::computeWaypointsFromPoses(const Eigen::Affine3d& start_pose, const Eigen::Affine3d& goal_pose, std::vector<geometry_msgs::Pose>& waypoints){
     
-    // Compute waypoints as linear interpolation (SLERP for rotaions) between the two poses
+    // Compute waypoints as linear interpolation (SLERP for rotations) between the two poses
 	Eigen::Affine3d wp_eigen;
 	geometry_msgs::Pose current_wp;
 
@@ -178,9 +178,14 @@ void SlerpControl::computeWaypointsFromPoses(const Eigen::Affine3d& start_pose, 
 	Eigen::Quaterniond goal_quat(goal_pose.linear());
 	Eigen::Quaterniond diff_quat;
 
+    // Setting the number of wp according to diff_vec
+    this->real_n_wp = std::floor(diff_vec.norm() * this->n_wp);
+    if(DEBUG) ROS_INFO_STREAM("The norm of the diff_vec is " << diff_vec.norm() << 
+        ", so the new number of waypoints is " << this->real_n_wp << ".");
+
 	for(int j = 1; j <= this->n_wp; j++){
-		wp_eigen.translation() = start_vec + (diff_vec / this->n_wp) * j;
-		diff_quat = start_quat.slerp(double(j)/double(this->n_wp), goal_quat);
+		wp_eigen.translation() = start_vec + (diff_vec / this->real_n_wp) * j;
+		diff_quat = start_quat.slerp(double(j)/double(this->real_n_wp), goal_quat);
 		wp_eigen.linear() = diff_quat.toRotationMatrix();
 		tf::poseEigenToMsg (wp_eigen, current_wp);
 		waypoints.push_back(current_wp);
