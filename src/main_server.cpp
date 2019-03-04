@@ -18,7 +18,7 @@ ROS NODE MAIN SERVICE SERVERS
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "adaptive_grasp_controller");
+    ros::init(argc, argv, "main_panda_softhand_server");
 
     ros::NodeHandle nh_;
 
