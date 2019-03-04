@@ -49,6 +49,7 @@ catkin_package(
 )
 
 set(OBJECTS_SOURCE_FILES
+src/parsing_utilities.cpp
   src/SlerpControl.cpp 
   src/HandControl.cpp 
   src/PoseControl.cpp 
