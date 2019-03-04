@@ -1,0 +1,6 @@
+# Parameters for task sequencer
+# Remember that there might be other important constants that can only be changed from the src code.
+
+task_sequencer:
+  # Name of the arm (namespace of arm joint_trajectory_controller)
+  home_joints: [-0.035, -0.109, -0.048, -1.888, 0.075, 1.797, -0.110] 
