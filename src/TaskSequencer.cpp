@@ -72,6 +72,16 @@ bool TaskSequencer::parse_task_params(){
     // Converting the pre_grasp_transform vector to geometry_msgs Pose
     this->pre_grasp_T = this->convert_vector_to_pose(this->pre_grasp_transform);
 
+    if(!ros::param::get("/task_sequencer/handover_pose", this->handover_pose)){
+		ROS_WARN("The param 'handover_pose' not found in param server! Using default.");
+		this->handover_pose.resize(6);
+        std::fill(this->handover_pose.begin(), this->handover_pose.end(), 0.0);
+		success = false;
+	}
+
+    // Converting the handover_pose vector to geometry_msgs Pose
+    this->handover_T = this->convert_vector_to_pose(this->handover_pose);
+
     return success;
 }
 
@@ -114,7 +124,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
         return true;
     }
 
-    // Going to home configuration
+    // 1) Going to home configuration
     if(!this->panda_softhand_client.call_joint_service(this->home_joints)){
         ROS_ERROR("Could not go to the specified home joint configuration.");
         res.success = false;
@@ -128,10 +138,10 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     Eigen::Affine3d pre_grasp_transform_aff; tf::poseMsgToEigen(this->pre_grasp_T, pre_grasp_transform_aff);
 
     geometry_msgs::Pose pre_grasp_pose; geometry_msgs::Pose grasp_pose;
-    tf::poseEigenToMsg(object_pose_aff * grasp_transform_aff, grasp_pose);
     tf::poseEigenToMsg(object_pose_aff * grasp_transform_aff * pre_grasp_transform_aff, pre_grasp_pose);
+    tf::poseEigenToMsg(object_pose_aff * grasp_transform_aff, grasp_pose);
 
-    // Going to pregrasp pose
+    // 2) Going to pregrasp pose
     if(!this->panda_softhand_client.call_pose_service(pre_grasp_pose, false)){
         ROS_ERROR("Could not go to the specified pre grasp pose.");
         res.success = false;
@@ -139,6 +149,47 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
         return false;
     }
 
+    // 3) Going to grasp pose
+    if(!this->panda_softhand_client.call_slerp_service(grasp_pose, false)){
+        ROS_ERROR("Could not go to the specified grasp pose.");
+        res.success = false;
+        res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // 4) Performing adaptive grasp
+    if(!this->panda_softhand_client.call_adaptive_service(true)){
+        ROS_ERROR("Could not perform the adaptive grasp.");
+        res.success = false;
+        res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // 5) Lift up to pregrasp pose
+    if(!this->panda_softhand_client.call_slerp_service(pre_grasp_pose, false)){
+        ROS_ERROR("Could not lift to the specified pose.");
+        res.success = false;
+        res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // 6) Going to handover pose
+    if(!this->panda_softhand_client.call_pose_service(handover_T, false)){
+        ROS_ERROR("Could not go to the specified handover pose.");
+        res.success = false;
+        res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // 7) TMP: open hand
+    if(!this->panda_softhand_client.call_hand_service(0.0, 2.0)){
+        ROS_ERROR("Could not open the hand.");
+        res.success = false;
+        res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // Now, everything finished well
     res.success = true;
     res.message = "The service call_adaptive_grasp_task was correctly performed!";
     return true;

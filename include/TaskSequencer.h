@@ -69,5 +69,6 @@ class TaskSequencer {
         geometry_msgs::Pose grasp_T;
         std::vector<double> pre_grasp_transform;
         geometry_msgs::Pose pre_grasp_T;
-	
+        std::vector<double> handover_pose;
+        geometry_msgs::Pose handover_T;
 };
