@@ -40,6 +40,9 @@ class TaskSequencer {
         // Callback for adaptive grasp task service
         bool call_adaptive_grasp_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
 
+        // Callback for simple grasp task service
+        bool call_simple_grasp_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
+
 
 	/// private variables -------------------------------------------------------------------------
 	private:

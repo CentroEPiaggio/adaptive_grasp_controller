@@ -30,6 +30,7 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
 
     // Advertising the services
     this->adaptive_task_server = this->nh.advertiseService(this->adaptive_task_service_name, &TaskSequencer::call_adaptive_grasp_task, this);
+    this->grasp_task_server = this->nh.advertiseService(this->grasp_task_service_name, &TaskSequencer::call_simple_grasp_task, this);
 
     // Spinning once
     ros::spinOnce();
@@ -192,5 +193,87 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     // Now, everything finished well
     res.success = true;
     res.message = "The service call_adaptive_grasp_task was correctly performed!";
+    return true;
+}
+
+// Callback for simple grasp task service
+bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res){
+    
+    // Checking the request for correctness
+    if(!req.data){
+        ROS_WARN("Did you really want to call the simple grasp task service with data = false?");
+        res.success = true;
+        res.message = "The service call_simple_grasp_task done correctly with false request!";
+        return true;
+    }
+
+    // 1) Going to home configuration
+    if(!this->panda_softhand_client.call_joint_service(this->home_joints)){
+        ROS_ERROR("Could not go to the specified home joint configuration.");
+        res.success = false;
+        res.message = "The service call_simple_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // Computing the grasp and pregrasp pose and converting to geometry_msgs Pose
+    Eigen::Affine3d object_pose_aff; tf::poseMsgToEigen(this->object_pose_T, object_pose_aff);
+    Eigen::Affine3d grasp_transform_aff; tf::poseMsgToEigen(this->grasp_T, grasp_transform_aff);
+    Eigen::Affine3d pre_grasp_transform_aff; tf::poseMsgToEigen(this->pre_grasp_T, pre_grasp_transform_aff);
+
+    geometry_msgs::Pose pre_grasp_pose; geometry_msgs::Pose grasp_pose;
+    tf::poseEigenToMsg(object_pose_aff * grasp_transform_aff * pre_grasp_transform_aff, pre_grasp_pose);
+    tf::poseEigenToMsg(object_pose_aff * grasp_transform_aff, grasp_pose);
+
+    // 2) Going to pregrasp pose
+    if(!this->panda_softhand_client.call_pose_service(pre_grasp_pose, false)){
+        ROS_ERROR("Could not go to the specified pre grasp pose.");
+        res.success = false;
+        res.message = "The service call_simple_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // 3) Going to grasp pose
+    if(!this->panda_softhand_client.call_slerp_service(grasp_pose, false)){
+        ROS_ERROR("Could not go to the specified grasp pose.");
+        res.success = false;
+        res.message = "The service call_simple_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // 4) Performing simple grasp
+    if(!this->panda_softhand_client.call_hand_service(1.0, 2.0)){
+        ROS_ERROR("Could not perform the simple grasp.");
+        res.success = false;
+        res.message = "The service call_simple_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // 5) Lift up to pregrasp pose
+    if(!this->panda_softhand_client.call_slerp_service(pre_grasp_pose, false)){
+        ROS_ERROR("Could not lift to the specified pose.");
+        res.success = false;
+        res.message = "The service call_simple_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // 6) Going to handover pose
+    if(!this->panda_softhand_client.call_pose_service(handover_T, false)){
+        ROS_ERROR("Could not go to the specified handover pose.");
+        res.success = false;
+        res.message = "The service call_simple_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // 7) TMP: open hand
+    if(!this->panda_softhand_client.call_hand_service(0.0, 2.0)){
+        ROS_ERROR("Could not open the hand.");
+        res.success = false;
+        res.message = "The service call_simple_grasp_task was NOT performed correctly!";
+        return false;
+    }
+
+    // Now, everything finished well
+    res.success = true;
+    res.message = "The service call_simple_grasp_task was correctly performed!";
     return true;
 }
