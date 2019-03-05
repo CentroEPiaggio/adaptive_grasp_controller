@@ -5,7 +5,7 @@ task_sequencer:
   # Name of the arm (namespace of arm joint_trajectory_controller)
   home_joints: [-0.035, -0.109, -0.048, -1.888, 0.075, 1.797, -0.110] 
   # Transform from object frame to grasp pose frame (xyzrpy)
-  grasp_transform: [0.0, 0.0, 0.05, -3.1415, 0.0, 0.0]
+  grasp_transform: [0.0, 0.0, 0.04, -3.1415, 0.0, 0.0]
   # Transform from grasp pose frame to pre-grasp pose frame (xyzrpy)
   pre_grasp_transform: [0.0, 0.0, -0.1, 0.0, 0.0, 0.0]
   # Transform from world to handover pose frame (xyzrpy)
