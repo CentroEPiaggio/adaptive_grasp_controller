@@ -34,6 +34,9 @@ class TaskSequencer {
         // Convert xyzrpy vector to geometry_msgs Pose
         geometry_msgs::Pose convert_vector_to_pose(std::vector<double> input_vec);
 
+        // Callback for object pose subscriber
+        void get_object_pose(const geometry_msgs::Pose::ConstPtr &msg);
+
         // Callback for adaptive grasp task service
         bool call_adaptive_grasp_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
 
@@ -42,10 +45,15 @@ class TaskSequencer {
 	private:
 		ros::NodeHandle nh;
 
+        // Subscriber to object pose and the pose
+        ros::Subscriber object_sub;
+        geometry_msgs::Pose object_pose_T;
+
         // The Panda SoftHand Client
         PandaSoftHandClient panda_softhand_client;
 
-        // Service names
+        // Topic and service names
+        std::string object_topic_name;
         std::string adaptive_task_service_name;
         std::string grasp_task_service_name;
         std::string handshake_task_service_name;

@@ -10,6 +10,16 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
     // Initializing Node Handle
     this->nh = nh_;
 
+    // Parsing the task params
+    if(!this->parse_task_params()){
+        ROS_ERROR("The parsing of task parameters went wrong. Be careful, using default values...");
+    }
+
+    // Initializing the object subscriber and waiting (TODO: parse the topic name)
+    this->object_topic_name = "object_pose";
+    this->object_sub = this->nh.subscribe(this->object_topic_name, 1, &TaskSequencer::get_object_pose, this);
+    this->object_pose_T = *(ros::topic::waitForMessage<geometry_msgs::Pose>(this->object_topic_name, ros::Duration(2.0)));
+
     // Initializing Panda SoftHand Client
     this->panda_softhand_client.initialize(this->nh);
 
@@ -17,11 +27,6 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
     this->adaptive_task_service_name = "adaptive_task_service";
     this->grasp_task_service_name = "grasp_task_service";
     this->handshake_task_service_name = "handshake_task_service";
-
-    // Parsing the task params
-    if(!this->parse_task_params()){
-        ROS_ERROR("The parsing of task parameters went wrong. Be careful, using default values...");
-    }
 
     // Advertising the services
     this->adaptive_task_server = this->nh.advertiseService(this->adaptive_task_service_name, &TaskSequencer::call_adaptive_grasp_task, this);
@@ -61,6 +66,9 @@ bool TaskSequencer::parse_task_params(){
 		success = false;
 	}
 
+    // Converting the pre_grasp_transform vector to geometry_msgs Pose
+    this->pre_grasp_T = this->convert_vector_to_pose(this->pre_grasp_transform);
+
     return success;
 }
 
@@ -74,14 +82,21 @@ geometry_msgs::Pose TaskSequencer::convert_vector_to_pose(std::vector<double> in
     // Getting translation and rotation
     Eigen::Vector3d translation(input_vec[0], input_vec[1], input_vec[2]);
     output_affine.translation() = translation;
-    Eigen::Matrix3f rotation = Eigen::AngleAxisf(input_vec[5], Eigen::Vector3d::UnitZ())
-        * Eigen::AngleAxisf(input_vec[4], Eigen::Vector3d::UnitY())
-        * Eigen::AngleAxisf(input_vec[3], Eigen::Vector3d::UnitX());
+    Eigen::Matrix3d rotation = Eigen::Matrix3d(Eigen::AngleAxisd(input_vec[5], Eigen::Vector3d::UnitZ())
+        * Eigen::AngleAxisd(input_vec[4], Eigen::Vector3d::UnitY())
+        * Eigen::AngleAxisd(input_vec[3], Eigen::Vector3d::UnitX()));
     output_affine.linear() = rotation;    
     
     // Converting to geometry_msgs and returning
     tf::poseEigenToMsg(output_affine, output_pose);
     return output_pose;
+}
+
+// Callback for object pose subscriber
+void TaskSequencer::get_object_pose(const geometry_msgs::Pose::ConstPtr &msg){
+
+    // Saving the message
+    this->object_pose_T = *msg;
 }
 
 
@@ -95,6 +110,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
         res.message = "The service call_adaptive_grasp_task done correctly with false request!";
         return true;
     }
+
     // Going to home configuration
     if(!this->panda_softhand_client.call_joint_service(this->home_joints)){
         ROS_ERROR("Could not go to the specified home joint configuration.");
@@ -103,7 +119,22 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
         return false;
     }
 
-    // Getting the 
+    // Computing the grasp and pregrasp pose and converting to geometry_msgs Pose
+    Eigen::Affine3d object_pose_aff; tf::poseMsgToEigen(this->object_pose_T, object_pose_aff);
+    Eigen::Affine3d grasp_transform_aff; tf::poseMsgToEigen(this->grasp_T, grasp_transform_aff);
+    Eigen::Affine3d pre_grasp_transform_aff; tf::poseMsgToEigen(this->pre_grasp_T, pre_grasp_transform_aff);
+
+    geometry_msgs::Pose pre_grasp_pose; geometry_msgs::Pose grasp_pose;
+    tf::poseEigenToMsg(object_pose_aff * grasp_transform_aff, grasp_pose);
+    tf::poseEigenToMsg(object_pose_aff * grasp_transform_aff * pre_grasp_transform_aff, pre_grasp_pose);
+
+    // Going to pregrasp pose
+    if(!this->panda_softhand_client.call_pose_service(pre_grasp_pose, false)){
+        ROS_ERROR("Could not go to the specified pre grasp pose.");
+        res.success = false;
+        res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
+        return false;
+    }
 
     res.success = true;
     res.message = "The service call_adaptive_grasp_task was correctly performed!";
