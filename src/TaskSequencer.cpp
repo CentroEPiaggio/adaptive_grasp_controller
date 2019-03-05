@@ -18,7 +18,7 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
     // Initializing the object subscriber and waiting (TODO: parse the topic name)
     this->object_topic_name = "object_pose";
     this->object_sub = this->nh.subscribe(this->object_topic_name, 1, &TaskSequencer::get_object_pose, this);
-    this->object_pose_T = *(ros::topic::waitForMessage<geometry_msgs::Pose>(this->object_topic_name, ros::Duration(2.0)));
+    ros::topic::waitForMessage<geometry_msgs::Pose>(this->object_topic_name, ros::Duration(2.0));
 
     // Initializing Panda SoftHand Client
     this->panda_softhand_client.initialize(this->nh);
@@ -30,6 +30,9 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
 
     // Advertising the services
     this->adaptive_task_server = this->nh.advertiseService(this->adaptive_task_service_name, &TaskSequencer::call_adaptive_grasp_task, this);
+
+    // Spinning once
+    ros::spinOnce();
 
 }
 
