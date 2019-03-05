@@ -173,7 +173,7 @@ bool PoseControl::sendJointTrajectory(trajectory_msgs::JointTrajectory trajector
 
     this->arm_client_ptr->sendGoal(goalmsg);
 
-    if(!this->arm_client_ptr->waitForResult(ros::Duration(30, 0))){
+    if(!this->arm_client_ptr->waitForResult(ros::Duration(60, 0))){
         ROS_WARN("The arm client is taking too to complete goal execution. Is it a really long motion???");
     }
 
