@@ -5,7 +5,7 @@
 	<arg name="task_sequences_params" default="$(find adaptive_grasp_controller)/configs/task_sequences_params.yaml"/>
 
 	<!-- Temporarily publishing the object pose. TODO: comment out when using vision -->
-	<node name="rostopic_object_pose_node" pkg="rostopic" type="rostopic" args="pub object_pose geometry_msgs/Pose 
+	<node name="rostopic_object_pose_node" pkg="rostopic" type="rostopic" args="pub -r 10 object_pose geometry_msgs/Pose 
 	'{position: {x: 0.627, y: -0.040, z: 0.049}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 0.0}}'"/>
 	
 	<!-- Loading config file to param server -->
