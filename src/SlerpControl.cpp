@@ -192,8 +192,8 @@ void SlerpControl::computeWaypointsFromPoses(const Eigen::Affine3d& start_pose, 
 
         if(DEBUG){
             std::cout << "WAYPOINT NUMBER " << j << "." << std::endl;
-		    std::cout << "WP R: " << wp_eigen.linear() << std::endl;
-		    std::cout << "WP t: " << wp_eigen.translation() << std::endl;
+		    std::cout << "WP R: \n" << wp_eigen.linear() << std::endl;
+		    std::cout << "WP t: \n" << wp_eigen.translation() << std::endl;
         }
     }
 }

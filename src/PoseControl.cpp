@@ -81,8 +81,8 @@ bool PoseControl::initialize(geometry_msgs::Pose goal_pose, bool is_goal_relativ
     tf::transformTFToEigen(ee_transform, this->end_effector_state);
 
 	// Print the current end-effector pose
-	if(DEBUG) ROS_INFO_STREAM("Endeffector current Translation: " << this->end_effector_state.translation());
-	if(DEBUG) ROS_INFO_STREAM("Endeffector current Rotation: " << this->end_effector_state.rotation());
+	if(DEBUG) ROS_INFO_STREAM("Endeffector current Translation: \n" << this->end_effector_state.translation());
+	if(DEBUG) ROS_INFO_STREAM("Endeffector current Rotation: \n" << this->end_effector_state.rotation());
 
 	// Setting the goal pose
     tf::poseMsgToEigen(goal_pose, this->goalPoseAff);
@@ -96,8 +96,8 @@ bool PoseControl::initialize(geometry_msgs::Pose goal_pose, bool is_goal_relativ
     tf::poseEigenToMsg(this->goalPoseAff, this->goalPose);
 
     // Print the goal end-effector pose
-    if(DEBUG) ROS_INFO_STREAM("Endeffector goal Translation: " << this->goalPoseAff.translation());
-	if(DEBUG) ROS_INFO_STREAM("Endeffector goal Rotation: " << this->goalPoseAff.linear());
+    if(DEBUG) ROS_INFO_STREAM("Endeffector goal Translation: \n" << this->goalPoseAff.translation());
+	if(DEBUG) ROS_INFO_STREAM("Endeffector goal Rotation: \n" << this->goalPoseAff.linear());
 
     return true;
 }
