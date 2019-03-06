@@ -199,6 +199,7 @@ void AdaptiveControl::performMotionPlan() {
 	// Some additional parameters for MoveIt
 	group.setPlanningTime(5.0);
 	group.setPlannerId("RRTConnectkConfigDefault"); // RRTstarkConfigDefault
+	group.setMaxVelocityScalingFactor(0.2);
 
 	// Planning for the waypoints path
 	moveit_msgs::RobotTrajectory trajectory;
