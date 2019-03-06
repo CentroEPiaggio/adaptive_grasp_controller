@@ -2,6 +2,13 @@
 # Remember that there might be other important constants that can only be changed from the src code.
 
 task_sequencer:
+  # Name of the robot
+  robot_name: panda_arm
+  # Position controller
+  pos_controller: position_joint_trajectory_controller
+  # Impedance controller
+  imp_controller: cartesian_impedance_controller_softbots_stiff_matrix
+
   # Name of the arm (namespace of arm joint_trajectory_controller)
   home_joints: [-0.035, -0.109, -0.048, -1.888, 0.075, 1.797, -0.110] 
   # Transform from object frame to grasp pose frame (xyzrpy)

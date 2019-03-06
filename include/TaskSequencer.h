@@ -10,6 +10,7 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 // ROS Service and Message Includes
 #include "std_srvs/SetBool.h"
 #include "geometry_msgs/Pose.h"
+#include <controller_manager_msgs/SwitchController.h>
 
 // Custom Includes
 #include "PandaSoftHandClient.h"
@@ -34,6 +35,9 @@ class TaskSequencer {
         // Convert xyzrpy vector to geometry_msgs Pose
         geometry_msgs::Pose convert_vector_to_pose(std::vector<double> input_vec);
 
+        // To switch the controllers
+        bool switch_controllers(std::string robot_name, std::string from_controller, std::string to_controller);
+
         // Callback for object pose subscriber
         void get_object_pose(const geometry_msgs::Pose::ConstPtr &msg);
 
@@ -46,7 +50,6 @@ class TaskSequencer {
         // Callback for handshake task service
         bool call_handshake_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
 
-
 	/// private variables -------------------------------------------------------------------------
 	private:
 		ros::NodeHandle nh;
@@ -57,6 +60,12 @@ class TaskSequencer {
 
         // The Panda SoftHand Client
         PandaSoftHandClient panda_softhand_client;
+
+        // A controller_mangager msg for switching controllers
+        controller_manager_msgs::SwitchController switch_controller;
+
+        // The switch controller service name
+        std::string switch_service_name = "/controller_manager/switch_controller";
 
         // Topic and service names
         std::string object_topic_name;
@@ -70,6 +79,9 @@ class TaskSequencer {
         ros::ServiceServer handshake_task_server;
 
         // Parsed task sequence variables
+        std::string robot_name;                     // Name of the robot (namespace)
+        std::string pos_controller;                 // Name of position controller
+        std::string imp_controller;                 // Name of impedance controller
         std::vector<double> home_joints;
         std::vector<double> grasp_transform;
         geometry_msgs::Pose grasp_T;

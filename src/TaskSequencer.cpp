@@ -47,6 +47,24 @@ TaskSequencer::~TaskSequencer(){
 bool TaskSequencer::parse_task_params(){
     bool success = true;
 
+    if(!ros::param::get("/task_sequencer/robot_name", this->robot_name)){
+		ROS_WARN("The param 'robot_name' not found in param server! Using default.");
+		this->robot_name = "panda_arm";
+		success = false;
+	}
+
+    if(!ros::param::get("/task_sequencer/pos_controller", this->pos_controller)){
+		ROS_WARN("The param 'pos_controller' not found in param server! Using default.");
+		this->pos_controller = "position_joint_trajectory_controller";
+		success = false;
+	}
+
+    if(!ros::param::get("/task_sequencer/imp_controller", this->imp_controller)){
+		ROS_WARN("The param 'imp_controller' not found in param server! Using default.");
+		this->imp_controller = "cartesian_impedance_controller_softbots_stiff_matrix";
+		success = false;
+	}
+
 	if(!ros::param::get("/task_sequencer/home_joints", this->home_joints)){
 		ROS_WARN("The param 'home_joints' not found in param server! Using default.");
 		this->home_joints.resize(7);
@@ -115,6 +133,25 @@ geometry_msgs::Pose TaskSequencer::convert_vector_to_pose(std::vector<double> in
     // Converting to geometry_msgs and returning
     tf::poseEigenToMsg(output_affine, output_pose);
     return output_pose;
+}
+
+// To switch the controllers
+bool TaskSequencer::switch_controllers(std::string robot_name, std::string from_controller, std::string to_controller){
+
+    // Temporary bool to be returned
+    bool success = false;
+
+    // Clearing the switch message
+    this->switch_controller.request.start_controllers.clear();
+    this->switch_controller.request.stop_controllers.clear();
+
+    // Filling up the switch message
+    this->switch_controller.request.start_controllers.push_back(to_controller);
+    this->switch_controller.request.stop_controllers.push_back(from_controller);
+    this->switch_controller.request.strictness = controller_manager_msgs::SwitchController::Request::STRICT;
+
+    // Swithching controller by calling the service
+    return ros::service::call<controller_manager_msgs::SwitchController>(robot_name + this->switch_service_name, this->switch_controller);
 }
 
 // Callback for object pose subscriber
@@ -307,6 +344,30 @@ bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srv
         res.message = "The service call_handshake_task was NOT performed correctly!";
         return false;
     }
-    
-       
+
+    // 2) Swithching to impedance controller
+    if(!this->switch_controllers(this->robot_name, this->pos_controller, this->imp_controller)){
+        ROS_ERROR_STREAM("Could not switch to the impedance controller " 
+            << this->imp_controller << " from " << this->pos_controller << ". Are these controllers loaded?");
+        res.success = false;
+        res.message = "The service call_handshake_task was NOT performed correctly!";
+        return false;
+    }
+
+    ROS_WARN_STREAM("Switched controllers: from " << this->imp_controller << " to " << this->pos_controller << ".");
+
+    // 3) Sleeping temporarily (TODO: Write the body here)
+    sleep(15.0);
+
+    // 4) Swithching to position controller
+    if(!this->switch_controllers(this->robot_name, this->imp_controller, this->pos_controller)){
+        ROS_ERROR_STREAM("Could not switch to the position controller " 
+            << this->pos_controller << " from " << this->imp_controller << ". Are these controllers loaded?");
+        res.success = false;
+        res.message = "The service call_handshake_task was NOT performed correctly!";
+        return false;
+    }
+
+    ROS_WARN_STREAM("Switched controllers: from " << this->pos_controller << " to " << this->imp_controller << ".");
+
 }
