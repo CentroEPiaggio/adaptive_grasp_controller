@@ -955,7 +955,7 @@ Visualization Manager:
       Show Robot Collision: false
       Show Robot Visual: true
       Show Trail: false
-      State Display Time: 0.1 s
+      State Display Time: REALTIME
       Trail Step Size: 1
       Trajectory Topic: /move_group/display_planned_path
       Value: true
