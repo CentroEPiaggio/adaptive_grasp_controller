@@ -31,6 +31,7 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
     // Advertising the services
     this->adaptive_task_server = this->nh.advertiseService(this->adaptive_task_service_name, &TaskSequencer::call_adaptive_grasp_task, this);
     this->grasp_task_server = this->nh.advertiseService(this->grasp_task_service_name, &TaskSequencer::call_simple_grasp_task, this);
+    this->handshake_task_server = this->nh.advertiseService(this->handshake_task_service_name, &TaskSequencer::call_handshake_task, this);
 
     // Spinning once
     ros::spinOnce();
@@ -82,6 +83,16 @@ bool TaskSequencer::parse_task_params(){
 
     // Converting the handover_pose vector to geometry_msgs Pose
     this->handover_T = this->convert_vector_to_pose(this->handover_pose);
+
+    if(!ros::param::get("/task_sequencer/handshake_pose", this->handshake_pose)){
+		ROS_WARN("The param 'handshake_pose' not found in param server! Using default.");
+		this->handshake_pose.resize(6);
+        std::fill(this->handshake_pose.begin(), this->handshake_pose.end(), 0.0);
+		success = false;
+	}
+
+    // Converting the handshake_pose vector to geometry_msgs Pose
+    this->handshake_T = this->convert_vector_to_pose(this->handshake_pose);
 
     return success;
 }
@@ -276,4 +287,26 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     res.success = true;
     res.message = "The service call_simple_grasp_task was correctly performed!";
     return true;
+}
+
+// Callback for handshake task service
+bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res){
+
+    // Checking the request for correctness
+    if(!req.data){
+        ROS_WARN("Did you really want to call the handshake task service with data = false?");
+        res.success = true;
+        res.message = "The service call_handshake_task done correctly with false request!";
+        return true;
+    }
+
+    // 1) Going to handshake pose
+    if(!this->panda_softhand_client.call_pose_service(handshake_T, false)){
+        ROS_ERROR("Could not go to the specified handshake pose.");
+        res.success = false;
+        res.message = "The service call_handshake_task was NOT performed correctly!";
+        return false;
+    }
+    
+       
 }

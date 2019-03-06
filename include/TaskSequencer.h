@@ -43,6 +43,9 @@ class TaskSequencer {
         // Callback for simple grasp task service
         bool call_simple_grasp_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
 
+        // Callback for handshake task service
+        bool call_handshake_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
+
 
 	/// private variables -------------------------------------------------------------------------
 	private:
@@ -74,4 +77,6 @@ class TaskSequencer {
         geometry_msgs::Pose pre_grasp_T;
         std::vector<double> handover_pose;
         geometry_msgs::Pose handover_T;
+        std::vector<double> handshake_pose;
+        geometry_msgs::Pose handshake_T;
 };
