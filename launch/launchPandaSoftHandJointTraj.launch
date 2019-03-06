@@ -74,12 +74,15 @@
             <rosparam command="load" file="$(find franka_gazebo)/config/sim_controllers.yaml" />
             <node name="state_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller"/>
             <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="position_joint_trajectory_controller"/>
+            <node name="controller_stopper" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="--stopped cartesian_impedance_controller_softbots_stiff_matrix"/>
             <node name="joint_state_desired_publisher" pkg="topic_tools" type="relay" args="/panda_arm/joint_states /joint_states_desired" />
         </group>
         <group unless="$(arg use_gazebo)">
             <rosparam command="load" file="$(find franka_control)/config/default_controllers.yaml" />
             <node name="state_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="franka_state_controller"/>
             <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="position_joint_trajectory_controller"/>
+            <node name="controller_stopper" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="--stopped cartesian_impedance_controller_softbots_stiff_matrix"/>
+
             
             <!-- Panda joint state publisher -->
             <node name="joint_state_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
