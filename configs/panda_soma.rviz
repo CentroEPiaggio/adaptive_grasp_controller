@@ -712,7 +712,8 @@ Visualization Manager:
       Marker Topic: /rviz_visual_tools
       Name: Goal Pose
       Namespaces:
-        {}
+        Text: true
+        goal pose: true
       Queue Size: 100
       Value: true
     - Class: moveit_rviz_plugin/Trajectory
@@ -955,7 +956,7 @@ Visualization Manager:
       Show Robot Collision: false
       Show Robot Visual: true
       Show Trail: false
-      State Display Time: REALTIME
+      State Display Time: 0.1 s
       Trail Step Size: 1
       Trajectory Topic: /move_group/display_planned_path
       Value: true
