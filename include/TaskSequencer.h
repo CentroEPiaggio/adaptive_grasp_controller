@@ -9,6 +9,7 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 
 // ROS Service and Message Includes
 #include "std_msgs/Float64.h"
+#include "std_msgs/Bool.h"
 #include "std_srvs/SetBool.h"
 #include "geometry_msgs/Pose.h"
 #include <controller_manager_msgs/SwitchController.h>
@@ -96,6 +97,7 @@ class TaskSequencer {
         std::string imp_controller;                 // Name of impedance controller
         std::string handshake_ekf_srv_name;         // Name of handshake ekf service
         std::string handshake_cont_srv_name;        // Name of handshake control service
+        std::string handshake_end_topic_name;       // Name of handshake ending event topic
         std::vector<double> home_joints;
         std::vector<double> grasp_transform;
         geometry_msgs::Pose grasp_T;

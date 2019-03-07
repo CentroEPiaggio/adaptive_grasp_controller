@@ -84,6 +84,12 @@ bool TaskSequencer::parse_task_params(){
 		success = false;
 	}
 
+    if(!ros::param::get("/task_sequencer/handshake_end_topic_name", this->handshake_end_topic_name)){
+		ROS_WARN("The param 'handshake_end_topic_name' not found in param server! Using default.");
+		this->handshake_end_topic_name = "handshake_ending";
+		success = false;
+	}
+
 	if(!ros::param::get("/task_sequencer/home_joints", this->home_joints)){
 		ROS_WARN("The param 'home_joints' not found in param server! Using default.");
 		this->home_joints = {-0.035, -0.109, -0.048, -1.888, 0.075, 1.797, -0.110};
@@ -434,8 +440,8 @@ bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srv
         return false;
     }
 
-    // 4) TODO: Wait for an event on a topic instead of time
-    sleep(30);
+    // 4) Wait for an event on a topic
+    ros::topic::waitForMessage<std_msgs::Bool>(this->handshake_end_topic_name, ros::Duration(180));
 
     // 3) Calling the handshake filter and control services
     bool_srv.request.data = false;
