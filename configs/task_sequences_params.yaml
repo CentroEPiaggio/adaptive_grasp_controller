@@ -18,6 +18,6 @@ task_sequencer:
   # Transform from world to handover pose frame (xyzrpy)
   handover_pose: [0.790, -0.017, 0.565, -1.239, 0.491, -0.519]
   # The threshold on tau_ext for handover hand opening
-  handover_thresh: 4.5
+  handover_thresh: 5.0
   # Transform from world to handshake pose frame (xyzrpy)
   handshake_pose: [0.714, 0.068, 0.277, -1.254, 0.049, 0.239]

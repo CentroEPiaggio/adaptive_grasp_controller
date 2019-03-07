@@ -269,10 +269,20 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     }
 
     // 7) Open hand after waiting for threshold or for some time
-    bool hand_open = false; ros::Time init_time = ros::Time::now();
+    sleep(1);       // Sleeping for a second to avoid robot stopping peaks
+    bool hand_open = false; ros::Time init_time = ros::Time::now(); ros::Time now_time;
     while(!hand_open){
-        if(this->tau_ext_norm > this->handover_thresh || (ros::Time::now() - init_time) > ros::Duration(5.0)){
+        now_time = ros::Time::now();
+        if(this->tau_ext_norm > this->handover_thresh){
             hand_open = true;
+            ROS_WARN_STREAM("Opening condition reached!" << " SOMEONE PULLED!");
+            ROS_WARN_STREAM("The tau_ext_norm is " << this->tau_ext_norm << " and the threshold is " << this->handover_thresh << ".");
+        }
+        if((now_time - init_time) > ros::Duration(10, 0)){
+            hand_open = true;
+            ROS_WARN_STREAM("Opening condition reached!" << " TIMEOUT!");
+            ROS_WARN_STREAM("The initial time was " << init_time << ", now it is " << now_time 
+                << ", the difference is " << (now_time - init_time) << " and the timeout thresh is " << ros::Duration(10, 0));
         }
     }
 
