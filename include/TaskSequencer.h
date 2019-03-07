@@ -102,6 +102,5 @@ class TaskSequencer {
         std::vector<double> handover_pose;
         geometry_msgs::Pose handover_T;
         double handover_thresh;
-        std::vector<double> handshake_pose;
-        geometry_msgs::Pose handshake_T;
+        std::vector<double> handshake_joints;
 };
