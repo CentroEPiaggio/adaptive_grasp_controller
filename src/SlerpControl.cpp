@@ -156,7 +156,10 @@ bool SlerpControl::performMotionPlan(){
     visual_tools.publishAxisLabeled(cart_waypoints.back(), "goal pose");
     visual_tools.publishTrajectoryLine(trajectory, joint_model_group);
     visual_tools.trigger();
+    
+    #ifdef PROMPT
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to execute the motion on the robot.");
+    #endif
 
     #endif
 

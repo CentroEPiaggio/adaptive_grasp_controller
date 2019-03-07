@@ -133,7 +133,10 @@ bool JointControl::performMotionPlan(){
     ROS_INFO("Visualizing the computed plan as trajectory line.");
     visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
     visual_tools.trigger();
+    
+    #ifdef PROMPT
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to execute the motion on the robot.");
+    #endif
 
     #endif
 

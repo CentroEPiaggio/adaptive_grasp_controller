@@ -27,6 +27,7 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 // Defines
 #define     DEBUG   1       // Prints out additional stuff
 #define     VISUAL          // Publishes visual info on RViz
+// #define     PROMPT          // Waits for confermation in RViz before execution
 
 class PoseControl {
 
