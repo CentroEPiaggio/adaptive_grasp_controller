@@ -94,6 +94,8 @@ class TaskSequencer {
         std::string robot_name;                     // Name of the robot (namespace)
         std::string pos_controller;                 // Name of position controller
         std::string imp_controller;                 // Name of impedance controller
+        std::string handshake_ekf_srv_name;         // Name of handshake ekf service
+        std::string handshake_cont_srv_name;        // Name of handshake control service
         std::vector<double> home_joints;
         std::vector<double> grasp_transform;
         geometry_msgs::Pose grasp_T;

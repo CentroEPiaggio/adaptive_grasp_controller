@@ -72,6 +72,18 @@ bool TaskSequencer::parse_task_params(){
 		success = false;
 	}
 
+    if(!ros::param::get("/task_sequencer/handshake_ekf_srv_name", this->handshake_ekf_srv_name)){
+		ROS_WARN("The param 'handshake_ekf_srv_name' not found in param server! Using default.");
+		this->handshake_ekf_srv_name = "call_handshake_ekf";
+		success = false;
+	}
+
+    if(!ros::param::get("/task_sequencer/handshake_cont_srv_name", this->handshake_cont_srv_name)){
+		ROS_WARN("The param 'handshake_cont_srv_name' not found in param server! Using default.");
+		this->handshake_cont_srv_name = "call_handshake_control";
+		success = false;
+	}
+
 	if(!ros::param::get("/task_sequencer/home_joints", this->home_joints)){
 		ROS_WARN("The param 'home_joints' not found in param server! Using default.");
 		this->home_joints = {-0.035, -0.109, -0.048, -1.888, 0.075, 1.797, -0.110};
@@ -406,8 +418,32 @@ bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srv
 
     ROS_WARN_STREAM("Switched controllers: from " << this->imp_controller << " to " << this->pos_controller << ".");
 
-    // 3) Sleeping temporarily (TODO: Write the body here)
-    sleep(15.0);
+    // 3) Calling the handshake filter and control services
+    std_srvs::SetBool bool_srv; bool_srv.request.data = true;
+    if(!ros::service::call<std_srvs::SetBool>(this->handshake_ekf_srv_name, bool_srv)){
+        ROS_ERROR("Could not call the handshake ekf service.");
+        res.success = false;
+        res.message = "The service call_handshake_task was NOT performed correctly!";
+        return false;
+    }
+    if(!ros::service::call<std_srvs::SetBool>(this->handshake_cont_srv_name, bool_srv)){
+        ROS_ERROR("Could not call the handshake control service.");
+        res.success = false;
+        res.message = "The service call_handshake_task was NOT performed correctly!";
+        return false;
+    }
+
+    // 4) TODO: Wait for an event on a topic instead of time
+    sleep(30);
+
+    // 3) Calling the handshake filter and control services
+    bool_srv.request.data = false;
+    if(!ros::service::call<std_srvs::SetBool>(this->handshake_ekf_srv_name, bool_srv)){
+        ROS_WARN("Could not stop the handshake ekf service.");
+    }
+    if(!ros::service::call<std_srvs::SetBool>(this->handshake_cont_srv_name, bool_srv)){
+        ROS_WARN("Could not stop the handshake control service.");
+    }
 
     // 4) Swithching to position controller
     if(!this->switch_controllers(this->robot_name, this->imp_controller, this->pos_controller)){

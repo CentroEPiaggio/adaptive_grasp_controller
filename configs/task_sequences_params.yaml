@@ -8,6 +8,9 @@ task_sequencer:
   pos_controller: position_joint_trajectory_controller
   # Impedance controller
   imp_controller: cartesian_impedance_controller_softbots_stiff_matrix
+  # Handshake filter and control services names
+  handshake_ekf_srv_name: call_handshake_ekf
+  handshake_cont_srv_name: call_handshake_control
 
   # Name of the arm (namespace of arm joint_trajectory_controller)
   home_joints: [-0.035, -0.109, -0.048, -1.888, 0.075, 1.797, -0.110] 
