@@ -19,3 +19,4 @@ adaptive_grasp_controller:
   COMPENS_PERC: 40                          # Percentage of the compensation motion to be effectively given to the robot
   USE_SIGNATURE: 0                          # 0 for using closure signature axis, 1 otherwise
   FT_THRESHOLD: 3                           # F/T threshold to stop the motion
+  VELOCITY_SCALING: 0.2                     # For scaling the times of the adapitive waypoints (later change to moveit vel scaling)

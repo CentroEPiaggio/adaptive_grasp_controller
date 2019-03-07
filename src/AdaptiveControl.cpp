@@ -16,6 +16,7 @@
 #include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit/robot_model/robot_model.h>
 #include <moveit/robot_state/robot_state.h>
+// #include <moveit/trajectory_processing/iterative_time_parameterization.h> 		// TODO: scaling using proper moveit tools
 
 // Robot state publishing
 #include <moveit/robot_state/conversions.h>
@@ -199,13 +200,18 @@ void AdaptiveControl::performMotionPlan() {
 	// Some additional parameters for MoveIt
 	group.setPlanningTime(5.0);
 	group.setPlannerId("RRTConnectkConfigDefault"); // RRTstarkConfigDefault
-	group.setMaxVelocityScalingFactor(0.2);
 
 	// Planning for the waypoints path
 	moveit_msgs::RobotTrajectory trajectory;
 	double fraction = group.computeCartesianPath(cart_waypoints, 0.01, 0.0, trajectory);
 
 	ROS_INFO("Plan (cartesian path) (%.2f%% acheived)", fraction * 100.0);
+
+	// Slowing down the trajectory with VELOCITY_SCALING
+	int num_traj_points = trajectory.joint_trajectory.points.size();
+	for(int k = 0; k < num_traj_points; k++){
+		trajectory.joint_trajectory.points[k].time_from_start *= (double(1/VELOCITY_SCALING));
+	}
 
 	if(fraction > 0) {
 		// Setting current_fraction for using it later on sending partial trajectory to arm
@@ -828,6 +834,11 @@ bool AdaptiveControl::getParamsOfYaml(){
 	if(!ros::param::get("/adaptive_grasp_controller/USE_SIGNATURE", USE_SIGNATURE)){
 		ROS_WARN("USE_SIGNATURE param not found in param server! Using default.");
 		USE_SIGNATURE = 0;
+		success = false;
+	}
+	if(!ros::param::get("/adaptive_grasp_controller/VELOCITY_SCALING", VELOCITY_SCALING)){
+		ROS_WARN("VELOCITY_SCALING param not found in param server! Using default.");
+		VELOCITY_SCALING = 0.2;
 		success = false;
 	}
 

@@ -97,6 +97,7 @@ class AdaptiveControl {
 		int SKIP_TRAJ_DELAY; 												// Delay in ms to avoid "first trajectory before current time" in first hand close
 		int COMPENS_PERC;													// Percentage of the compensation motion to be effectively given to the robot
 		int USE_SIGNATURE;                       							// Int for using closure signature axis
+		double VELOCITY_SCALING;                       						// For scaling the times of the adapitive waypoints (later change to moveit vel scaling)
 		double diff_ft;														// The following are for the force/torque sensor
 		geometry_msgs::WrenchStamped initial_ft;
 		double FT_THRESHOLD;
