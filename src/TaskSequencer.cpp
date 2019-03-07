@@ -280,6 +280,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     bool hand_open = false; ros::Time init_time = ros::Time::now(); ros::Time now_time;
     while(!hand_open){
         now_time = ros::Time::now();
+        usleep(50);                         // Don't know why, but the threshold works with this sleeping
         if(this->tau_ext_norm > this->handover_thresh){
             hand_open = true;
             if(DEBUG) ROS_WARN_STREAM("Opening condition reached!" << " SOMEONE PULLED!");
