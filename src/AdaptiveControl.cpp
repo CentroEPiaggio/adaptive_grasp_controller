@@ -207,10 +207,13 @@ void AdaptiveControl::performMotionPlan() {
 
 	ROS_INFO("Plan (cartesian path) (%.2f%% acheived)", fraction * 100.0);
 
-	// Slowing down the trajectory with VELOCITY_SCALING
+	// Printing the positions and vels and slowing down the trajectory with VELOCITY_SCALING
 	int num_traj_points = trajectory.joint_trajectory.points.size();
 	for(int k = 0; k < num_traj_points; k++){
-		trajectory.joint_trajectory.points[k].time_from_start *= (double(1/VELOCITY_SCALING));
+		// trajectory.joint_trajectory.points[k].time_from_start *= (double(1/VELOCITY_SCALING));
+		ROS_INFO_STREAM("The " << k << "th trajectory position of fifth joint is \n" << trajectory.joint_trajectory.points[k].positions[4]
+			<< ", the velocity is " << trajectory.joint_trajectory.points[k].velocities[4]
+			<< "and the acceleration is " << trajectory.joint_trajectory.points[k].accelerations[4]);
 	}
 
 	if(fraction > 0) {
@@ -686,7 +689,7 @@ void AdaptiveControl::stopArmWhenCollision(boost::shared_ptr<actionlib::SimpleAc
 			}
 		} else {
 			ROS_INFO("A FURTHER COLLISION DETECTED ON FINGER %d! STOPPING THE COMPENSATING ARM MOTION!\n", touching_finger);
-			arm_joint_client->cancelGoal();				// Comment this out if working with IMU Glove
+			// arm_joint_client->cancelGoal();				// Comment this out if working with IMU Glove
 		}
 		rate.sleep();
 	}
