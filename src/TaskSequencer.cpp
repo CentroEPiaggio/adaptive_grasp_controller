@@ -39,6 +39,10 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
     this->adaptive_task_server = this->nh.advertiseService(this->adaptive_task_service_name, &TaskSequencer::call_adaptive_grasp_task, this);
     this->grasp_task_server = this->nh.advertiseService(this->grasp_task_service_name, &TaskSequencer::call_simple_grasp_task, this);
     this->handshake_task_server = this->nh.advertiseService(this->handshake_task_service_name, &TaskSequencer::call_handshake_task, this);
+    this->end_handshake_server = this->nh.advertiseService(this->handshake_end_srv_name, &TaskSequencer::call_handshake_end, this);
+
+    // Setting other utils
+    this->handshake_ended = false;
 
     // Spinning once
     ros::spinOnce();
@@ -84,9 +88,9 @@ bool TaskSequencer::parse_task_params(){
 		success = false;
 	}
 
-    if(!ros::param::get("/task_sequencer/handshake_end_topic_name", this->handshake_end_topic_name)){
-		ROS_WARN("The param 'handshake_end_topic_name' not found in param server! Using default.");
-		this->handshake_end_topic_name = "handshake_ending";
+    if(!ros::param::get("/task_sequencer/handshake_end_srv_name", this->handshake_end_srv_name)){
+		ROS_WARN("The param 'handshake_end_srv_name' not found in param server! Using default.");
+		this->handshake_end_srv_name = "handshake_ending";
 		success = false;
 	}
 
@@ -423,7 +427,7 @@ bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srv
         return false;
     }
 
-    ROS_WARN_STREAM("Switched controllers: from " << this->imp_controller << " to " << this->pos_controller << ".");
+    ROS_WARN_STREAM("Switched controllers: from " << this->pos_controller << " to " << this->imp_controller << ".");
 
     // 3) Calling the handshake filter and control services
     std_srvs::SetBool bool_srv; bool_srv.request.data = true;
@@ -440,8 +444,13 @@ bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srv
         return false;
     }
 
+    ROS_INFO("Called the ekf and the control of handshake!");
+
     // 4) Wait for an event on a topic
-    ros::topic::waitForMessage<std_msgs::Bool>(this->handshake_end_topic_name, ros::Duration(180));
+    while(!this->handshake_ended){
+        // Sleep for some time
+        usleep(50);
+    }
 
     // 3) Calling the handshake filter and control services
     bool_srv.request.data = false;
@@ -461,6 +470,25 @@ bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srv
         return false;
     }
 
-    ROS_WARN_STREAM("Switched controllers: from " << this->pos_controller << " to " << this->imp_controller << ".");
+    ROS_WARN_STREAM("Switched controllers: from " << this->imp_controller << " to " << this->pos_controller << ".");
 
+    // Resetting handshake ending
+    this->handshake_ended = false;
+
+    // At this point everything finished correctly
+    res.success = true;
+    res.message = "The service call_handshake_task was performed correctly!";
+    return true;
+}
+
+// Callback for handshake ending service
+bool TaskSequencer::call_handshake_end(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res){
+
+    // Stopping the handshake
+    this->handshake_ended = req.data;
+
+    // Setting the response
+    res.message = "Set the handshake_ending according to request.";
+    res.success = true;
+    return true;
 }

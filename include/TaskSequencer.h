@@ -56,6 +56,9 @@ class TaskSequencer {
         // Callback for handshake task service
         bool call_handshake_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
 
+        // Callback for handshake ending service
+        bool call_handshake_end(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
+
 	/// private variables -------------------------------------------------------------------------
 	private:
 		ros::NodeHandle nh;
@@ -90,6 +93,10 @@ class TaskSequencer {
         ros::ServiceServer adaptive_task_server;
         ros::ServiceServer grasp_task_server;
         ros::ServiceServer handshake_task_server;
+        ros::ServiceServer end_handshake_server;
+
+        // Other utils
+        bool handshake_ended;
 
         // Parsed task sequence variables
         std::string robot_name;                     // Name of the robot (namespace)
@@ -97,7 +104,7 @@ class TaskSequencer {
         std::string imp_controller;                 // Name of impedance controller
         std::string handshake_ekf_srv_name;         // Name of handshake ekf service
         std::string handshake_cont_srv_name;        // Name of handshake control service
-        std::string handshake_end_topic_name;       // Name of handshake ending event topic
+        std::string handshake_end_srv_name;       // Name of handshake ending event service
         std::vector<double> home_joints;
         std::vector<double> grasp_transform;
         geometry_msgs::Pose grasp_T;
