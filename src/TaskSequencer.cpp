@@ -74,8 +74,7 @@ bool TaskSequencer::parse_task_params(){
 
 	if(!ros::param::get("/task_sequencer/home_joints", this->home_joints)){
 		ROS_WARN("The param 'home_joints' not found in param server! Using default.");
-		this->home_joints.resize(7);
-        std::fill(this->home_joints.begin(), this->home_joints.end(), 0.0);
+		this->home_joints = {-0.035, -0.109, -0.048, -1.888, 0.075, 1.797, -0.110};
 		success = false;
 	}
 
@@ -115,15 +114,11 @@ bool TaskSequencer::parse_task_params(){
 		success = false;
 	}
 
-    if(!ros::param::get("/task_sequencer/handshake_pose", this->handshake_pose)){
-		ROS_WARN("The param 'handshake_pose' not found in param server! Using default.");
-		this->handshake_pose.resize(6);
-        std::fill(this->handshake_pose.begin(), this->handshake_pose.end(), 0.0);
+    if(!ros::param::get("/task_sequencer/handshake_joints", this->handshake_joints)){
+		ROS_WARN("The param 'handshake_joints' not found in param server! Using default.");
+		this->handshake_joints = {0.062, 0.420, -0.362, -1.885, 1.489, 1.261, -0.031};
 		success = false;
 	}
-
-    // Converting the handshake_pose vector to geometry_msgs Pose
-    this->handshake_T = this->convert_vector_to_pose(this->handshake_pose);
 
     return success;
 }
@@ -275,13 +270,13 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
         now_time = ros::Time::now();
         if(this->tau_ext_norm > this->handover_thresh){
             hand_open = true;
-            ROS_WARN_STREAM("Opening condition reached!" << " SOMEONE PULLED!");
-            ROS_WARN_STREAM("The tau_ext_norm is " << this->tau_ext_norm << " and the threshold is " << this->handover_thresh << ".");
+            if(DEBUG) ROS_WARN_STREAM("Opening condition reached!" << " SOMEONE PULLED!");
+            if(DEBUG) ROS_WARN_STREAM("The tau_ext_norm is " << this->tau_ext_norm << " and the threshold is " << this->handover_thresh << ".");
         }
         if((now_time - init_time) > ros::Duration(10, 0)){
             hand_open = true;
-            ROS_WARN_STREAM("Opening condition reached!" << " TIMEOUT!");
-            ROS_WARN_STREAM("The initial time was " << init_time << ", now it is " << now_time 
+            if(DEBUG) ROS_WARN_STREAM("Opening condition reached!" << " TIMEOUT!");
+            if(DEBUG) ROS_WARN_STREAM("The initial time was " << init_time << ", now it is " << now_time 
                 << ", the difference is " << (now_time - init_time) << " and the timeout thresh is " << ros::Duration(10, 0));
         }
     }
@@ -392,9 +387,9 @@ bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srv
         return true;
     }
 
-    // 1) Going to handshake pose
-    if(!this->panda_softhand_client.call_pose_service(handshake_T, false)){
-        ROS_ERROR("Could not go to the specified handshake pose.");
+    // 1) Going to handshake configuration
+    if(!this->panda_softhand_client.call_joint_service(this->handshake_joints)){
+        ROS_ERROR("Could not go to the specified handshake joint configuration.");
         res.success = false;
         res.message = "The service call_handshake_task was NOT performed correctly!";
         return false;
