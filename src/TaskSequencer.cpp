@@ -285,7 +285,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
         return false;
     }
 
-    // 7) Open hand after waiting for threshold or for some time
+    // 7) Waiting for threshold or for some time
     sleep(1);       // Sleeping for a second to avoid robot stopping peaks
     bool hand_open = false; ros::Time init_time = ros::Time::now(); ros::Time now_time;
     while(!hand_open){
@@ -304,6 +304,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
         }
     }
 
+    // 8) Opening hand 
     if(!this->panda_softhand_client.call_hand_service(0.0, 2.0)){
         ROS_ERROR("Could not open the hand.");
         res.success = false;
@@ -385,7 +386,26 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
         return false;
     }
 
-    // 7) TMP: open hand
+    // 7) Waiting for threshold or for some time
+    sleep(1);       // Sleeping for a second to avoid robot stopping peaks
+    bool hand_open = false; ros::Time init_time = ros::Time::now(); ros::Time now_time;
+    while(!hand_open){
+        now_time = ros::Time::now();
+        usleep(50);                         // Don't know why, but the threshold works with this sleeping
+        if(this->tau_ext_norm > this->handover_thresh){
+            hand_open = true;
+            if(DEBUG) ROS_WARN_STREAM("Opening condition reached!" << " SOMEONE PULLED!");
+            if(DEBUG) ROS_WARN_STREAM("The tau_ext_norm is " << this->tau_ext_norm << " and the threshold is " << this->handover_thresh << ".");
+        }
+        if((now_time - init_time) > ros::Duration(10, 0)){
+            hand_open = true;
+            if(DEBUG) ROS_WARN_STREAM("Opening condition reached!" << " TIMEOUT!");
+            if(DEBUG) ROS_WARN_STREAM("The initial time was " << init_time << ", now it is " << now_time 
+                << ", the difference is " << (now_time - init_time) << " and the timeout thresh is " << ros::Duration(10, 0));
+        }
+    }
+
+    // 8) Opening hand 
     if(!this->panda_softhand_client.call_hand_service(0.0, 2.0)){
         ROS_ERROR("Could not open the hand.");
         res.success = false;
