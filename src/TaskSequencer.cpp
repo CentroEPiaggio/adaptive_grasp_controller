@@ -20,6 +20,13 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
     this->object_sub = this->nh.subscribe(this->object_topic_name, 1, &TaskSequencer::get_object_pose, this);
     ros::topic::waitForMessage<geometry_msgs::Pose>(this->object_topic_name, ros::Duration(2.0));
 
+    // Initializing the tau_ext subscriber and waiting
+    this->tau_ext_sub = this->nh.subscribe(this->robot_name + this->tau_ext_topic_name, 1, &TaskSequencer::get_tau_ext, this);
+    ros::topic::waitForMessage<franka_msgs::FrankaState>(this->tau_ext_topic_name, ros::Duration(2.0));
+
+    // Initializing the tau_ext norm publisher
+    this->pub_tau_ext_norm = this->nh.advertise<std_msgs::Float64>("tau_ext_norm", 1);
+
     // Initializing Panda SoftHand Client
     this->panda_softhand_client.initialize(this->nh);
 
@@ -102,6 +109,12 @@ bool TaskSequencer::parse_task_params(){
     // Converting the handover_pose vector to geometry_msgs Pose
     this->handover_T = this->convert_vector_to_pose(this->handover_pose);
 
+    if(!ros::param::get("/task_sequencer/handover_thresh", this->handover_thresh)){
+		ROS_WARN("The param 'handover_thresh' not found in param server! Using default.");
+		this->handover_thresh = 4.5;
+		success = false;
+	}
+
     if(!ros::param::get("/task_sequencer/handshake_pose", this->handshake_pose)){
 		ROS_WARN("The param 'handshake_pose' not found in param server! Using default.");
 		this->handshake_pose.resize(6);
@@ -159,6 +172,31 @@ void TaskSequencer::get_object_pose(const geometry_msgs::Pose::ConstPtr &msg){
 
     // Saving the message
     this->object_pose_T = *msg;
+}
+
+// Callback for tau_ext subscriber
+void TaskSequencer::get_tau_ext(const franka_msgs::FrankaState::ConstPtr &msg){
+
+    // Saving the message
+    this->latest_franka_state = *msg;
+
+    if(DEBUG && false){
+        std::cout << "The latest tau ext vector is \n [ ";
+        for(auto it : this->latest_franka_state.tau_ext_hat_filtered)  std::cout << it << " ";
+        std::cout << "]" << std::endl;
+    }
+
+    // Computing the norm
+    this->tau_ext_norm = 0.0;
+    for(auto it : this->latest_franka_state.tau_ext_hat_filtered){
+        this->tau_ext_norm += std::pow(it, 2);
+    }
+    this->tau_ext_norm = std::sqrt(this->tau_ext_norm);
+
+    // Publishing norm
+    std_msgs::Float64 norm_msg; norm_msg.data = this->tau_ext_norm;
+    this->pub_tau_ext_norm.publish(norm_msg);
+    
 }
 
 
@@ -230,7 +268,14 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
         return false;
     }
 
-    // 7) TMP: open hand
+    // 7) Open hand after waiting for threshold or for some time
+    bool hand_open = false; ros::Time init_time = ros::Time::now();
+    while(!hand_open){
+        if(this->tau_ext_norm > this->handover_thresh || (ros::Time::now() - init_time) > ros::Duration(5.0)){
+            hand_open = true;
+        }
+    }
+
     if(!this->panda_softhand_client.call_hand_service(0.0, 2.0)){
         ROS_ERROR("Could not open the hand.");
         res.success = false;

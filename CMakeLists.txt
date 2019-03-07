@@ -24,6 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
   interactive_markers 
   visualization_msgs
   moveit_core
+  franka_msgs
 )
 
 add_service_files(FILES
