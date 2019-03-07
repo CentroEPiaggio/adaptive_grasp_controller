@@ -7,7 +7,7 @@
 	
 		<!-- box (like a table) -->
     <model name="table">
-			<pose> 0.6 0 -0.06 0 0 0</pose>
+			<pose> 0.6 0 -0.055 0 0 0</pose>
 			<static>true</static>
 			<link name='linkTable'>
 				<pose>0 0 0 0 0 0</pose>
