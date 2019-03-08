@@ -65,12 +65,15 @@ link_directories(${SDFormat_LIBRARY_DIRS})
 
 add_executable(adaptive_grasp_controller src/AdaptiveGraspController.cpp)
 target_link_libraries(adaptive_grasp_controller ${catkin_LIBRARIES} ${ROS_LIBRARIES})
+add_dependencies(adaptive_grasp_controller ${catkin_EXPORTED_TARGETS})
 
 add_executable(main_server src/main_server.cpp ${OBJECTS_SOURCE_FILES})
 target_link_libraries(main_server ${catkin_LIBRARIES} ${ROS_LIBRARIES})
+add_dependencies(main_server ${catkin_EXPORTED_TARGETS})
 
 add_executable(main_client src/main_client.cpp ${OBJECTS_SOURCE_FILES})
 target_link_libraries(main_client ${catkin_LIBRARIES} ${ROS_LIBRARIES})
+add_dependencies(main_client ${catkin_EXPORTED_TARGETS})
 
 add_executable(publish_touch_demo_node src/PublishTouchDemo.cpp)
 target_link_libraries(publish_touch_demo_node ${catkin_LIBRARIES} ${ROS_LIBRARIES})
