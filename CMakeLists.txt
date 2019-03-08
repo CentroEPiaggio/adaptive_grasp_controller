@@ -36,7 +36,7 @@ generate_messages(DEPENDENCIES
 find_package(SDFormat REQUIRED)
 
 catkin_package(
-  CATKIN_DEPENDS actionlib_msgs moveit_ros_planning_interface
+  CATKIN_DEPENDS actionlib_msgs moveit_ros_planning_interface message_runtime
   LIBRARIES moveit_ros_planning_interface sdformat
 )
 
@@ -44,6 +44,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} /usr/include/eigen3 ${SDForma
 link_directories(${SDFormat_LIBRARY_DIRS})
 
 add_executable(adaptive_grasp_controller src/AdaptiveGraspController.cpp)
+add_dependencies(adaptive_grasp_controller ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(adaptive_grasp_controller ${catkin_LIBRARIES} ${ROS_LIBRARIES}) 
 
 add_executable(publish_touch_demo_node src/PublishTouchDemo.cpp)
