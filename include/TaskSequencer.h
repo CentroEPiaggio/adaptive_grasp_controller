@@ -107,12 +107,14 @@ class TaskSequencer {
 
         // Other utils
         bool handshake_ended;
+        bool handshake_config_rec;
 
         // The XmlRpc value for parsing complex params
         XmlRpc::XmlRpcValue task_seq_params;
 
         // Parsed task sequence variables
         std::string robot_name;                     // Name of the robot (namespace)
+        std::string robot_joints_name;              // Name of the robot joints (without the number of the joints)
         std::string pos_controller;                 // Name of position controller
         std::string imp_controller;                 // Name of impedance controller
         std::string handshake_ekf_srv_name;         // Name of handshake ekf service
@@ -128,4 +130,7 @@ class TaskSequencer {
         std::vector<double> handshake_joints;
 
         std::map<std::string, std::vector<double>> grasp_poses_map;     // The map containing the grasp poses for objects
+
+        // Function for setting the present joint config as handshake config
+        bool set_handshake_config();
 };

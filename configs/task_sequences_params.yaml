@@ -4,6 +4,8 @@
 task_sequencer:
   # Name of the robot
   robot_name: panda_arm
+  # Name of the robot joints (without the number of the joints)
+  robot_joints_name: panda_joint
   # Position controller
   pos_controller: position_joint_trajectory_controller
   # Impedance controller
@@ -25,6 +27,9 @@ task_sequencer:
   handover_thresh: 5.0
   # The joint configuration for handshake
   handshake_joints: [0.062, 0.420, -0.362, -1.885, 1.489, 1.261, -0.031]
+
+  # Boolean for enabling the registration of the handshake config when hanshake service is called
+  handshake_config_rec: true
 
   # The personalized grasp pose maps for different objects
   grasp_poses_map:

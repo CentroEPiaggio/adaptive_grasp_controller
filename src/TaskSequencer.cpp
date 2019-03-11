@@ -2,6 +2,8 @@
 Authors: George Jose Pollayil - Mathew Jose Pollayil
 Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 
+#include "sensor_msgs/JointState.h"
+
 #include "utils/parsing_utilities.h"
 #include "TaskSequencer.h"
 
@@ -46,6 +48,9 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
     // Setting other utils
     this->handshake_ended = false;
 
+    // Setting handshake joint config if requested
+    if(this->handshake_config_rec) this->set_handshake_config();
+
     // Spinning once
     ros::spinOnce();
 
@@ -63,6 +68,12 @@ bool TaskSequencer::parse_task_params(){
     if(!ros::param::get("/task_sequencer/robot_name", this->robot_name)){
 		ROS_WARN("The param 'robot_name' not found in param server! Using default.");
 		this->robot_name = "panda_arm";
+		success = false;
+	}
+
+    if(!ros::param::get("/task_sequencer/robot_joints_name", this->robot_joints_name)){
+		ROS_WARN("The param 'robot_joints_name' not found in param server! Using default.");
+		this->robot_joints_name = "panda_joint";
 		success = false;
 	}
 
@@ -137,6 +148,12 @@ bool TaskSequencer::parse_task_params(){
     if(!ros::param::get("/task_sequencer/handshake_joints", this->handshake_joints)){
 		ROS_WARN("The param 'handshake_joints' not found in param server! Using default.");
 		this->handshake_joints = {0.062, 0.420, -0.362, -1.885, 1.489, 1.261, -0.031};
+		success = false;
+	}
+
+    if(!ros::param::get("/task_sequencer/handshake_config_rec", this->handshake_config_rec)){
+		ROS_WARN("The param 'handshake_config_rec' not found in param server! Using default.");
+		this->handshake_config_rec = false;
 		success = false;
 	}
 
@@ -554,4 +571,38 @@ bool TaskSequencer::call_set_object(adaptive_grasp_controller::set_object::Reque
     ROS_INFO_STREAM("Grasp pose changed. Object set to " << req.object_name << ".");
     res.result = true;
     return res.result;
+}
+
+// Function for setting the present joint config as handshake config
+bool TaskSequencer::set_handshake_config(){
+
+    // Waiting for joint states and saving
+    sensor_msgs::JointState::ConstPtr joint_state = 
+		ros::topic::waitForMessage<sensor_msgs::JointState>("/joint_states", ros::Duration(1.0));
+
+    // Finding the robot joints and filling up the handshake config vector    
+    int joint_index;
+    int num_joints = this->handshake_joints.size();
+    this->handshake_joints.clear();
+
+    for(int i = 0; i < num_joints; i++){
+        
+        try{
+            joint_index = std::find(joint_state->name.begin(), joint_state->name.end(), this->robot_joints_name + std::to_string(i+1)) - joint_state->name.begin();
+        } catch (const std::exception &ex) {
+            ROS_ERROR_STREAM("Could not find the joint: " << this->robot_joints_name + std::to_string(i+1));
+            std::cerr << ex.what();
+            return false;
+        }
+        this->handshake_joints.push_back(double (joint_state->position[joint_index]));
+    }
+
+    // Now all is well
+    ROS_INFO_STREAM("The handshake joint config has been set to ");
+    std::cout << "[ ";
+    for(auto vec_it : this->handshake_joints){
+        std::cout << vec_it << " ";
+    } 
+    std::cout << "]" << std::endl;
+    
 }
