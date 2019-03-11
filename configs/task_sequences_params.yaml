@@ -28,6 +28,6 @@ task_sequencer:
 
   # The personalized grasp pose maps for different objects
   grasp_poses_map:
-    "capsicum" : [0.0, 0.0, 0.030, -3.1415, 0.0, 0.0]
+    "capsicum" : [0.0, 0.0, 0.038, -3.1415, 0.0, 0.0]
     "orange" : [0.0, 0.0, 0.017, -3.1415, 0.0, 0.0]
     "teddy" : [0.0, 0.0, 0.109, -3.1415, 0.0, 0.0]
