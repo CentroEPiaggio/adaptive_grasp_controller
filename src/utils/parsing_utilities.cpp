@@ -1,4 +1,4 @@
-#include "parsing_utilities.h"
+#include "utils/parsing_utilities.h"
 
 /**
 * @brief This h file contains utilities for parsing single parameters from 
@@ -190,6 +190,45 @@ bool parseParameter(XmlRpc::XmlRpcValue& params, std::map<std::string, std::stri
     ROS_DEBUG_STREAM("Parsed the map " << param_name << ".");
 
     return true;
+}
+
+/* PARSESTRINGVECTORMAPPARAMETER */
+bool parseParameter(XmlRpc::XmlRpcValue& params, std::map<std::string, std::vector<double>>& param, std::string param_name){
+    // Checking if there is a parameter with the requested name in the bunch of parsed parameters
+    if(!params.hasMember(param_name)){
+        ROS_ERROR_STREAM("No value found for " << param_name <<" parameter.");
+        return false;
+    }
+
+    // Make sure that the parameter is of the correct type and getting length
+    ROS_ASSERT(params[param_name].getType() == XmlRpc::XmlRpcValue::TypeStruct);
+
+    // Creating temporary map and vectro and filling them up
+    std::map<std::string, std::vector<double>> tmp_param;
+    std::vector<double> tmp_vec;
+    for(auto it = params[param_name].begin(); it != params[param_name].end(); ++it){
+        // Creating the vector and filling it up
+        tmp_vec.clear();
+        for(int i=0; i< it->second.size(); i++){
+            tmp_vec.push_back((double) it->second[i]);
+        }
+        ROS_DEBUG_STREAM("Parsed the vector " << it->second << " of size " << it->second.size() << ".");
+        // Inserting string and vector in the map
+        tmp_param[(std::string) it->first] = tmp_vec;
+    }
+
+    // Check is the temporary map is empty
+    if(tmp_param.empty()){
+        ROS_ERROR_STREAM("The map " << param_name <<" in the parameter server is empty.");
+        return false;
+    }
+
+    // Copy the temporary map into the input map and return
+    param.swap(tmp_param);
+    ROS_DEBUG_STREAM("Parsed the map " << param_name << ".");
+
+    return true;
+
 }
 
 /* PARSEMATRIXPARAMETER */
