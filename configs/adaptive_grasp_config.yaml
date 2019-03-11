@@ -16,7 +16,7 @@ adaptive_grasp_controller:
   HAND_TIMEOUT: 7.0                         # Hand closing timeout after which, if no collision, go on
   SLEEP_FOR_MOVE: 4.0                       # Sleep to do at least a bit of compensation movement even if other finger touches
   SKIP_TRAJ_DELAY: 50                       # Delay in ms to avoid "first trajectory before current time" in first hand close
-  COMPENS_PERC: 100                         # Percentage of the compensation motion to be effectively given to the robot
+  COMPENS_PERC: 30                          # Percentage of the compensation motion to be effectively given to the robot
   USE_SIGNATURE: 0                          # 0 for using closure signature axis, 1 otherwise
   FT_THRESHOLD: 3                           # F/T threshold to stop the motion
   VELOCITY_SCALING: 0.2                     # For scaling the times of the adapitive waypoints (later change to moveit vel scaling)

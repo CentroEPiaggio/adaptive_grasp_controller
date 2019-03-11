@@ -203,20 +203,28 @@ void AdaptiveControl::performMotionPlan() {
 
 	// Planning for the waypoints path
 	moveit_msgs::RobotTrajectory trajectory;
-	double fraction = group.computeCartesianPath(cart_waypoints, 0.01, 0.0, trajectory);
+	double fraction = group.computeCartesianPath(cart_waypoints, 0.01, 10, trajectory);
 
 	ROS_INFO("Plan (cartesian path) (%.2f%% acheived)", fraction * 100.0);
 
-	// Printing the positions and vels and slowing down the trajectory with VELOCITY_SCALING
-	int num_traj_points = trajectory.joint_trajectory.points.size();
-	for(int k = 0; k < num_traj_points; k++){
-		// trajectory.joint_trajectory.points[k].time_from_start *= (double(1/VELOCITY_SCALING));
-		ROS_INFO_STREAM("The " << k << "th trajectory position of fifth joint is \n" << trajectory.joint_trajectory.points[k].positions[4]
-			<< ", the velocity is " << trajectory.joint_trajectory.points[k].velocities[4]
-			<< "and the acceleration is " << trajectory.joint_trajectory.points[k].accelerations[4]);
-	}
-
 	if(fraction > 0) {
+		// Printing the positions and vels and slowing down the trajectory with VELOCITY_SCALING
+		int num_traj_points = trajectory.joint_trajectory.points.size();
+		int num_joints = trajectory.joint_trajectory.points[0].positions.size();
+		for(int k = 0; k < num_traj_points; k++){
+			ROS_INFO_STREAM("The " << k << "th trajectory position of fifth joint BEFORE is \n" << trajectory.joint_trajectory.points[k].positions[4]
+				<< ", the velocity is " << trajectory.joint_trajectory.points[k].velocities[4]
+				<< "and the acceleration is " << trajectory.joint_trajectory.points[k].accelerations[4]);
+			trajectory.joint_trajectory.points[k].time_from_start *= (double(1/VELOCITY_SCALING));
+			for(int j = 0; j < num_joints; j++){
+				trajectory.joint_trajectory.points[k].velocities[j] *= (double(VELOCITY_SCALING));
+				trajectory.joint_trajectory.points[k].accelerations[j] *= (double(VELOCITY_SCALING * VELOCITY_SCALING));
+			}
+			ROS_INFO_STREAM("The " << k << "th trajectory position of fifth joint AFTER is \n" << trajectory.joint_trajectory.points[k].positions[4]
+				<< ", the velocity is " << trajectory.joint_trajectory.points[k].velocities[4]
+				<< "and the acceleration is " << trajectory.joint_trajectory.points[k].accelerations[4]);
+		}
+
 		// Setting current_fraction for using it later on sending partial trajectory to arm
 		current_fraction = fraction;
 
