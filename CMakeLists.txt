@@ -76,6 +76,10 @@ add_executable(main_client src/main_client.cpp ${OBJECTS_SOURCE_FILES})
 add_dependencies(main_client ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(main_client ${catkin_LIBRARIES} ${ROS_LIBRARIES})
 
+add_executable(main_demo src/demo.cpp ${OBJECTS_SOURCE_FILES})
+add_dependencies(main_demo ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(main_demo ${catkin_LIBRARIES} ${ROS_LIBRARIES})
+
 add_executable(publish_touch_demo_node src/PublishTouchDemo.cpp)
 target_link_libraries(publish_touch_demo_node ${catkin_LIBRARIES} ${ROS_LIBRARIES})
 
