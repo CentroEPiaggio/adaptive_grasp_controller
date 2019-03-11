@@ -13,21 +13,21 @@ task_sequencer:
   handshake_cont_srv_name: call_handshake_control
   handshake_end_srv_name: handshake_ending
 
-  # Name of the arm (namespace of arm joint_trajectory_controller)
+  # The joint configuration for home
   home_joints: [-0.035, -0.109, -0.048, -1.888, 0.075, 1.797, -0.110] 
-  # Transform from object frame to grasp pose frame (xyzrpy)
-  grasp_transform: [0.0, 0.0, 0.015, -3.1415, 0.0, 0.0]
+  # Transform from object frame to grasp pose frame (xyzrpy) (DEFAULT)
+  grasp_transform: [0.0, 0.0, 0.030, -3.1415, 0.0, 0.0]
   # Transform from grasp pose frame to pre-grasp pose frame (xyzrpy)
   pre_grasp_transform: [0.0, 0.0, -0.1, 0.0, 0.0, 0.0]
-  # Transform from world to handover pose frame (xyzrpy)
-  handover_pose: [0.790, -0.017, 0.565, -1.239, 0.491, -0.519]
+  # The joint configuration for handover
+  handover_joints: [-0.101, 0.161, 0.159, -1.651, 2.023, 2.419, -0.006]
   # The threshold on tau_ext for handover hand opening
   handover_thresh: 5.0
-  # Transform from world to handshake pose frame (xyzrpy)
+  # The joint configuration for handshake
   handshake_joints: [0.062, 0.420, -0.362, -1.885, 1.489, 1.261, -0.031]
 
   # The personalized grasp pose maps for different objects
   grasp_poses_map:
-    "capsicum" : [0.0, 0.0, 0.015, -3.1415, 0.0, 0.0]
-    "orange" : [0.0, 0.0, 0.010, -3.1415, 0.0, 0.0]
+    "capsicum" : [0.0, 0.0, 0.030, -3.1415, 0.0, 0.0]
+    "orange" : [0.0, 0.0, 0.017, -3.1415, 0.0, 0.0]
     "teddy" : [0.0, 0.0, 0.109, -3.1415, 0.0, 0.0]

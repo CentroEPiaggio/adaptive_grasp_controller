@@ -122,15 +122,11 @@ bool TaskSequencer::parse_task_params(){
     // Converting the pre_grasp_transform vector to geometry_msgs Pose
     this->pre_grasp_T = this->convert_vector_to_pose(this->pre_grasp_transform);
 
-    if(!ros::param::get("/task_sequencer/handover_pose", this->handover_pose)){
-		ROS_WARN("The param 'handover_pose' not found in param server! Using default.");
-		this->handover_pose.resize(6);
-        std::fill(this->handover_pose.begin(), this->handover_pose.end(), 0.0);
+    if(!ros::param::get("/task_sequencer/handover_joints", this->handover_joints)){
+		ROS_WARN("The param 'handover_joints' not found in param server! Using default.");
+		this->handover_joints = {-0.101, 0.161, 0.159, -1.651, 2.023, 2.419, -0.006};
 		success = false;
 	}
-
-    // Converting the handover_pose vector to geometry_msgs Pose
-    this->handover_T = this->convert_vector_to_pose(this->handover_pose);
 
     if(!ros::param::get("/task_sequencer/handover_thresh", this->handover_thresh)){
 		ROS_WARN("The param 'handover_thresh' not found in param server! Using default.");
@@ -301,9 +297,9 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
         return false;
     }
 
-    // 6) Going to handover pose
-    if(!this->panda_softhand_client.call_pose_service(handover_T, false)){
-        ROS_ERROR("Could not go to the specified handover pose.");
+    // 6) Going to handover joint config
+    if(!this->panda_softhand_client.call_joint_service(this->handover_joints)){
+        ROS_ERROR("Could not go to the specified handover joint config.");
         res.success = false;
         res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
         return false;
@@ -402,9 +398,9 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
         return false;
     }
 
-    // 6) Going to handover pose
-    if(!this->panda_softhand_client.call_pose_service(handover_T, false)){
-        ROS_ERROR("Could not go to the specified handover pose.");
+    // 6) Going to handover joint config
+    if(!this->panda_softhand_client.call_joint_service(this->handover_joints)){
+        ROS_ERROR("Could not go to the specified handover joint config.");
         res.success = false;
         res.message = "The service call_simple_grasp_task was NOT performed correctly!";
         return false;
