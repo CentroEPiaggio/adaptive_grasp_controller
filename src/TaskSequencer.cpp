@@ -555,7 +555,7 @@ bool TaskSequencer::call_set_object(adaptive_grasp_controller::set_object::Reque
     this->grasp_T = this->convert_vector_to_pose(this->grasp_transform);
 
     // Now, everything is ok
-    ROS_INFO_STREAM("Grasp pose changed. Object set to " << req.object_name << ".")
+    ROS_INFO_STREAM("Grasp pose changed. Object set to " << req.object_name << ".");
     res.result = true;
     return res.result;
 }
