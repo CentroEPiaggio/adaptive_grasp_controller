@@ -11,9 +11,14 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 #include "std_msgs/Float64.h"
 #include "std_msgs/Bool.h"
 #include "std_srvs/SetBool.h"
+#include "adaptive_grasp_controller/set_object.h"
 #include "geometry_msgs/Pose.h"
 #include <controller_manager_msgs/SwitchController.h>
 #include <franka_msgs/FrankaState.h>
+
+// Parsing includes
+#include <XmlRpcValue.h>
+#include <XmlRpcException.h>
 
 // Custom Includes
 #include "PandaSoftHandClient.h"
@@ -59,6 +64,9 @@ class TaskSequencer {
         // Callback for handshake ending service
         bool call_handshake_end(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
 
+        // Callback for handshake task service
+        bool call_set_object(adaptive_grasp_controller::set_object::Request &req, adaptive_grasp_controller::set_object::Response &res);
+
 	/// private variables -------------------------------------------------------------------------
 	private:
 		ros::NodeHandle nh;
@@ -88,15 +96,20 @@ class TaskSequencer {
         std::string adaptive_task_service_name;
         std::string grasp_task_service_name;
         std::string handshake_task_service_name;
+        std::string set_object_service_name;
 
         // Service Servers
         ros::ServiceServer adaptive_task_server;
         ros::ServiceServer grasp_task_server;
         ros::ServiceServer handshake_task_server;
         ros::ServiceServer end_handshake_server;
+        ros::ServiceServer set_object_server;
 
         // Other utils
         bool handshake_ended;
+
+        // The XmlRpc value for parsing complex params
+        XmlRpc::XmlRpcValue task_seq_params;
 
         // Parsed task sequence variables
         std::string robot_name;                     // Name of the robot (namespace)
@@ -104,7 +117,7 @@ class TaskSequencer {
         std::string imp_controller;                 // Name of impedance controller
         std::string handshake_ekf_srv_name;         // Name of handshake ekf service
         std::string handshake_cont_srv_name;        // Name of handshake control service
-        std::string handshake_end_srv_name;       // Name of handshake ending event service
+        std::string handshake_end_srv_name;         // Name of handshake ending event service
         std::vector<double> home_joints;
         std::vector<double> grasp_transform;
         geometry_msgs::Pose grasp_T;
@@ -114,4 +127,6 @@ class TaskSequencer {
         geometry_msgs::Pose handover_T;
         double handover_thresh;
         std::vector<double> handshake_joints;
+
+        std::map<std::string, std::vector<double>> grasp_poses_map;     // The map containing the grasp poses for objects
 };

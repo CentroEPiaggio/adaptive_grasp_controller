@@ -34,6 +34,7 @@ add_service_files(FILES
   hand_control.srv
   pose_control.srv
   joint_control.srv
+  set_object.srv
 )
 
 generate_messages(DEPENDENCIES
@@ -50,7 +51,7 @@ catkin_package(
 )
 
 set(OBJECTS_SOURCE_FILES
-src/parsing_utilities.cpp
+  src/utils/parsing_utilities.cpp
   src/SlerpControl.cpp 
   src/HandControl.cpp 
   src/PoseControl.cpp 

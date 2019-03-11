@@ -2,7 +2,7 @@
 Authors: George Jose Pollayil - Mathew Jose Pollayil
 Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 
-#include "parsing_utilities.h"
+#include "utils/parsing_utilities.h"
 #include "TaskSequencer.h"
 
 TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
@@ -34,12 +34,14 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
     this->adaptive_task_service_name = "adaptive_task_service";
     this->grasp_task_service_name = "grasp_task_service";
     this->handshake_task_service_name = "handshake_task_service";
+    this->set_object_service_name = "set_object_service";
 
     // Advertising the services
     this->adaptive_task_server = this->nh.advertiseService(this->adaptive_task_service_name, &TaskSequencer::call_adaptive_grasp_task, this);
     this->grasp_task_server = this->nh.advertiseService(this->grasp_task_service_name, &TaskSequencer::call_simple_grasp_task, this);
     this->handshake_task_server = this->nh.advertiseService(this->handshake_task_service_name, &TaskSequencer::call_handshake_task, this);
     this->end_handshake_server = this->nh.advertiseService(this->handshake_end_srv_name, &TaskSequencer::call_handshake_end, this);
+    this->set_object_server = this->nh.advertiseService(this->set_object_service_name, &TaskSequencer::call_set_object, this);
 
     // Setting other utils
     this->handshake_ended = false;
@@ -141,6 +143,28 @@ bool TaskSequencer::parse_task_params(){
 		this->handshake_joints = {0.062, 0.420, -0.362, -1.885, 1.489, 1.261, -0.031};
 		success = false;
 	}
+
+    // Getting the XmlRpc value and parsing
+    if(!this->nh.getParam("/task_sequencer", this->task_seq_params)){
+        ROS_ERROR("Could not get the XmlRpc value.");
+        success = false;
+    }
+
+    if(!parseParameter(this->task_seq_params, this->grasp_poses_map, "grasp_poses_map")){
+        ROS_ERROR("Could not parse the grasp poses map.");
+        success = false;
+    }
+
+    if(DEBUG){
+        ROS_INFO_STREAM("The grasp poses map is");
+        for(auto it : this->grasp_poses_map){
+            std::cout << it.first << " : [ ";
+            for(auto vec_it : it.second){
+                std::cout << vec_it << " ";
+            } 
+            std::cout << "]" << std::endl;     
+        }
+    }
 
     return success;
 }
@@ -511,4 +535,27 @@ bool TaskSequencer::call_handshake_end(std_srvs::SetBool::Request &req, std_srvs
     res.message = "Set the handshake_ending according to request.";
     res.success = true;
     return true;
+}
+
+// Callback for handshake task service
+bool TaskSequencer::call_set_object(adaptive_grasp_controller::set_object::Request &req, adaptive_grasp_controller::set_object::Response &res){
+
+    // Checking if the parsed map contains the requested object
+    auto search = this->grasp_poses_map.find(req.object_name);
+    if(search == this->grasp_poses_map.end()){
+        ROS_WARN_STREAM("The object " << req.object_name << " is not present in my memory; using the previously used one or default... Did you spell it correctly? Is it in the yaml?");
+        res.result = false;
+        return res.result;
+    }
+
+    // Setting the grasp pose as requested
+    this->grasp_transform = this->grasp_poses_map.at(req.object_name);
+
+    // Converting the grasp_transform vector to geometry_msgs Pose
+    this->grasp_T = this->convert_vector_to_pose(this->grasp_transform);
+
+    // Now, everything is ok
+    ROS_INFO_STREAM("Grasp pose changed. Object set to " << req.object_name << ".")
+    res.result = true;
+    return res.result;
 }
