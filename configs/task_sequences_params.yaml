@@ -24,7 +24,7 @@ task_sequencer:
   # The joint configuration for handover
   handover_joints: [-0.101, 0.161, 0.159, -1.651, 2.023, 2.419, -0.006]
   # The threshold on tau_ext for handover hand opening
-  handover_thresh: 6.0
+  handover_thresh: 6.5
   # The joint configuration for handshake
   handshake_joints: [0.062, 0.420, -0.362, -1.885, 1.489, 1.261, -0.031]
 
