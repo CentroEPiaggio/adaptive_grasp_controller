@@ -50,8 +50,17 @@ int main(int argc, char **argv)
     int grasp_type;
     std::cout << "Please tell me which grasping to perform... Type [1] for simple grasp or [2] for adaptive grasp, then press enter!" << std::endl;
     std::cin >> grasp_type;
-    if(!(grasp_type == 1 || grasp_type ==2)){
+    if(!(grasp_type == 1 || grasp_type == 2)){
         ROS_ERROR("The number you typed is not valid. Please rerun the node and type a valid number!");
+        return 1;
+    }
+
+    // Asking if to perform handshake or not
+    std::string handshake;
+    std::cout << "Would you like to perform a handshake after the grasping? Type [y] if yes or [n] otherwise, then press enter!" << std::endl;
+    std::cin >> handshake;
+    if(!(handshake == "y" || handshake == "n" || handshake == "Y" || handshake == "N")){
+        ROS_ERROR("The character you typed is not valid. Please rerun the node and type a valid character!");
         return 1;
     }
 
@@ -80,16 +89,17 @@ int main(int argc, char **argv)
     ROS_INFO("The %s grasp has been performed correctly... \n", (grasp_type == 1) ? "simple" : "adaptive");
 
     // Going for the handshake
-    if(!ros::service::waitForService("handshake_task_service", ros::Duration(3.0))){
-        ROS_ERROR("Could not contact the handshake task service!");
-        return 1;
+    if(handshake == "y" || handshake == "Y" ){
+        if(!ros::service::waitForService("handshake_task_service", ros::Duration(3.0))){
+            ROS_ERROR("Could not contact the handshake task service!");
+            return 1;
+        }
+        if(!ros::service::call("handshake_task_service", task_srv)){
+            ROS_ERROR("Could not perform the handshake correctly! Please retry...");
+            return 1;
+        }
+        ROS_INFO("The handshake has been performed correctly... \n");
     }
-    if(!ros::service::call("handshake_task_service", task_srv)){
-        ROS_ERROR("Could not perform the handshake correctly! Please retry...");
-        return 1;
-    }
-
-    ROS_INFO("The handshake has been performed correctly... \n");
 
     ROS_INFO_STREAM("Shutting down the demo!");
 
