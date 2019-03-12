@@ -24,7 +24,7 @@ task_sequencer:
   # The joint configuration for handover
   handover_joints: [-0.101, 0.161, 0.159, -1.651, 2.023, 2.419, -0.006]
   # The threshold on tau_ext for handover hand opening
-  handover_thresh: 6.5
+  handover_thresh: 6.8
   # The joint configuration for handshake
   handshake_joints: [0.062, 0.420, -0.362, -1.885, 1.489, 1.261, -0.031]
 
@@ -33,8 +33,10 @@ task_sequencer:
 
   # The personalized grasp pose maps for different objects
   grasp_poses_map:
-    "apple" : [0.042, 0.018, 0.056, 3.104, 0.418, -0.074]
+    "apple_str" : [-0.014, -0.045, 0.013, -1.769, 0.162, 0.006]
+    "apple_inc" : [0.042, 0.018, 0.056, 3.104, 0.418, -0.074]
     "capsicum" : [0.0, 0.0, 0.038, -3.1415, 0.0, 0.0]
+    "capsicum_hig" : [0.0, 0.0, 0.04, -3.1415, 0.0, 0.0]
     "kettle" : [-0.029, 0.112, 0.195, -3.1415, 0.0, 0.0]
     "orange" : [0.0, 0.0, 0.017, -3.1415, 0.0, 0.0]
     "teddy" : [0.0, 0.0, 0.109, -3.1415, 0.0, 0.0]
