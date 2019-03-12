@@ -541,6 +541,8 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        object:
+          Value: false
         panda_EE:
           Value: false
         panda_K:
@@ -648,6 +650,8 @@ Visualization Manager:
       Show Names: true
       Tree:
         world:
+          object:
+            {}
           panda_link0:
             panda_link1:
               panda_link2:
@@ -1000,10 +1004,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.570398688
+      Pitch: -0.22460112
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.52857161
+      Yaw: 4.70856333
     Saved: ~
 Window Geometry:
   Displays:
@@ -1025,5 +1029,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1863
-  X: 1977
+  X: 57
   Y: 24

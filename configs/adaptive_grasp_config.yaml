@@ -9,7 +9,7 @@ adaptive_grasp_controller:
   IMU_TOPIC: touching_finger_topic          # Topic from which id of finger in collision is recieved from IMU Glove
   FT_TOPIC: ft_sensor                       # Topic for the force/torque sensing
   N_WP: 60                                  # Number of waypoints
-  CONTROL_DELAY: 40000                      # Microseconds of delay between hand and arm controllers in enclosing
+  CONTROL_DELAY: 50000                      # Microseconds of delay between hand and arm controllers in enclosing
   MAX_SYNERGY: 1.00                         # Maximum synergy of IMU SoftHand -> Please change JOINTS_CLOSED, THUMB_CLOSED and abd_closed in src code too
   CLOSE_TIME: 5000                          # Time in which the SoftHand closes totally
   N_WP_CLOSE: 150                           # Number of trajectory points of the slow hand closing
