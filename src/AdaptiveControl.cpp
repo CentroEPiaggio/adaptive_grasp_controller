@@ -696,7 +696,7 @@ void AdaptiveControl::stopArmWhenCollision(boost::shared_ptr<actionlib::SimpleAc
 				first_print_out = false;
 			}
 		} else {
-			ROS_INFO("A FURTHER COLLISION DETECTED ON FINGER %d! STOPPING THE COMPENSATING ARM MOTION!\n", touching_finger);
+			// ROS_INFO("A FURTHER COLLISION DETECTED ON FINGER %d! STOPPING THE COMPENSATING ARM MOTION!\n", touching_finger);
 			// arm_joint_client->cancelGoal();				// Comment this out if working with IMU Glove
 		}
 		rate.sleep();
