@@ -7,6 +7,8 @@
 	<!-- Temporarily publishing the object pose. TODO: comment out when using vision -->
 	<node name="rostopic_object_pose_node" pkg="rostopic" type="rostopic" args="pub -r 10 object_pose geometry_msgs/Pose 
 	'{position: {x: 0.627, y: -0.040, z: 0.049}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 0.0}}'"/>
+
+	<node name="world_to_object" pkg="tf" type="static_transform_publisher" args="0.627 -0.040 0.049 0.0 0.0 0.0 world object 100"/>
 	
 	<!-- Loading config file to param server -->
 	<rosparam command="load" file="$(arg task_sequences_params)"/>
