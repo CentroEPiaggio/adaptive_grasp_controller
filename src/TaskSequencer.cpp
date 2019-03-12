@@ -238,7 +238,10 @@ void TaskSequencer::get_franka_state(const franka_msgs::FrankaState::ConstPtr &m
     // Checking for libfranka errors
     if(msg->robot_mode != 2 && msg->robot_mode != 5){       // The robot state is not "automatic" or "manual guiding"
         this->franka_ok = false;
-        ROS_ERROR("Something happened to the robot!");
+        if(DEBUG && false) ROS_ERROR("Something happened to the robot!");
+    }else if(msg->robot_mode == 2){
+        this->franka_ok = true;
+        if(DEBUG && false) ROS_WARN("Now Franka is in a good mood!");
     }
 
     // Getting the tau ext
