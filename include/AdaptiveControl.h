@@ -39,8 +39,11 @@
 
 #define PI 				3.1415
 
-#define JOINTS_CLOSED	0.635										// Closed hand joint value of most of joints
-#define THUMB_CLOSED	0.617										// Closed thumb inner joint values
+// #define JOINTS_CLOSED	0.635										// Closed hand joint value of most of joints
+// #define THUMB_CLOSED	0.617										// Closed thumb inner joint values
+
+#define JOINTS_CLOSED	0.771										// Closed hand joint value of most of joints
+#define THUMB_CLOSED	1.002										// Closed thumb inner joint values
 
 class AdaptiveControl {
 
@@ -80,7 +83,8 @@ class AdaptiveControl {
 
 
 		// Adaptive control variables
-		const float abd_closed[5] = {0.268, -0.031, 0.007, 0.045, 0.083}; 	// Closed hand abd_joint values
+		// const float abd_closed[5] = {0.268, -0.031, 0.007, 0.045, 0.083}; 	// Closed hand abd_joint values
+		const float abd_closed[5] = {2.004, -0.196, 0.000, 0.196, 0.393}; 	// Closed hand abd_joint values
 		std::string ARM_NAME; 												// Name of the arm (namespace of arm joint_trajectory_controller)
 		std::string MOVEIT_GROUP; 											// Name of the MoveIt! MoveGroup of the arm, as in srdf
 		std::string HAND_NAME; 												// Name of the hand (namespace of hand joint_trajectory_controller)
