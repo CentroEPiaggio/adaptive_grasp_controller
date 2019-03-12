@@ -318,7 +318,13 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     }
 
     // 5) Lift up to pregrasp pose
-    if(!this->panda_softhand_client.call_slerp_service(pre_grasp_pose, false) || !this->franka_ok){
+    // if(!this->panda_softhand_client.call_slerp_service(pre_grasp_pose, false) || !this->franka_ok){
+    //     ROS_ERROR("Could not lift to the specified pose.");
+    //     res.success = false;
+    //     res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
+    //     return false;
+    // }
+    if(!this->panda_softhand_client.call_joint_service(this->home_joints) || !this->franka_ok){
         ROS_ERROR("Could not lift to the specified pose.");
         res.success = false;
         res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
@@ -419,7 +425,13 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     }
 
     // 5) Lift up to pregrasp pose
-    if(!this->panda_softhand_client.call_slerp_service(pre_grasp_pose, false) || !this->franka_ok){
+    // if(!this->panda_softhand_client.call_slerp_service(pre_grasp_pose, false) || !this->franka_ok){
+    //     ROS_ERROR("Could not lift to the specified pose.");
+    //     res.success = false;
+    //     res.message = "The service call_simple_grasp_task was NOT performed correctly!";
+    //     return false;
+    // }
+    if(!this->panda_softhand_client.call_joint_service(this->home_joints) || !this->franka_ok){
         ROS_ERROR("Could not lift to the specified pose.");
         res.success = false;
         res.message = "The service call_simple_grasp_task was NOT performed correctly!";
