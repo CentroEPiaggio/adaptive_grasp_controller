@@ -15,6 +15,7 @@ Email: gpollayil@gmail.com, mathewjosepollayil@gmail.com  */
 #include "geometry_msgs/Pose.h"
 #include <controller_manager_msgs/SwitchController.h>
 #include <franka_msgs/FrankaState.h>
+#include <franka_control/ErrorRecoveryActionGoal.h>
 
 // Parsing includes
 #include <XmlRpcValue.h>
@@ -49,8 +50,8 @@ class TaskSequencer {
         // Callback for object pose subscriber
         void get_object_pose(const geometry_msgs::Pose::ConstPtr &msg);
 
-        // Callback for tau_ext subscriber
-        void get_tau_ext(const franka_msgs::FrankaState::ConstPtr &msg);
+        // Callback for franka state subscriber
+        void get_franka_state(const franka_msgs::FrankaState::ConstPtr &msg);
 
         // Callback for adaptive grasp task service
         bool call_adaptive_grasp_task(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
@@ -75,11 +76,13 @@ class TaskSequencer {
         ros::Subscriber object_sub;
         geometry_msgs::Pose object_pose_T;
 
-        // Subscriber to franka_states for getting tau_ext on joints and Publisher of its norm
-        ros::Subscriber tau_ext_sub;
+        // Subscriber to franka_states for getting tau_ext on joints and other info and Publisher of its norm
+        ros::Subscriber franka_state_sub;
         franka_msgs::FrankaState latest_franka_state;
+        bool franka_ok = true;
         double tau_ext_norm = 0.0;
         ros::Publisher pub_tau_ext_norm;
+        ros::Publisher pub_franka_recovery;         // TODO: Recover from error automatically
 
         // The Panda SoftHand Client
         PandaSoftHandClient panda_softhand_client;
@@ -92,7 +95,7 @@ class TaskSequencer {
 
         // Topic and service names
         std::string object_topic_name;
-        std::string tau_ext_topic_name = "/franka_state_controller/franka_states";
+        std::string franka_state_topic_name = "/franka_state_controller/franka_states";
         std::string adaptive_task_service_name;
         std::string grasp_task_service_name;
         std::string handshake_task_service_name;

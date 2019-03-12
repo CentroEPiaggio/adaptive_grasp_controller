@@ -22,11 +22,12 @@ TaskSequencer::TaskSequencer(ros::NodeHandle& nh_){
     this->object_sub = this->nh.subscribe(this->object_topic_name, 1, &TaskSequencer::get_object_pose, this);
     ros::topic::waitForMessage<geometry_msgs::Pose>(this->object_topic_name, ros::Duration(2.0));
 
-    // Initializing the tau_ext subscriber and waiting
-    this->tau_ext_sub = this->nh.subscribe(this->robot_name + this->tau_ext_topic_name, 1, &TaskSequencer::get_tau_ext, this);
-    ros::topic::waitForMessage<franka_msgs::FrankaState>(this->tau_ext_topic_name, ros::Duration(2.0));
+    // Initializing the franka_state_sub subscriber and waiting
+    this->franka_state_sub = this->nh.subscribe(this->robot_name + this->franka_state_topic_name, 1, &TaskSequencer::get_franka_state, this);
+    ros::topic::waitForMessage<franka_msgs::FrankaState>(this->franka_state_topic_name, ros::Duration(2.0));
 
-    // Initializing the tau_ext norm publisher
+    // Initializing the tau_ext norm and franka recovery publishers
+    this->pub_franka_recovery = this->nh.advertise<franka_control::ErrorRecoveryActionGoal>(this->robot_name + "/franka_control/error_recovery/goal", 1);
     this->pub_tau_ext_norm = this->nh.advertise<std_msgs::Float64>("tau_ext_norm", 1);
 
     // Initializing Panda SoftHand Client
@@ -228,12 +229,19 @@ void TaskSequencer::get_object_pose(const geometry_msgs::Pose::ConstPtr &msg){
     this->object_pose_T = *msg;
 }
 
-// Callback for tau_ext subscriber
-void TaskSequencer::get_tau_ext(const franka_msgs::FrankaState::ConstPtr &msg){
+// Callback for franka state subscriber
+void TaskSequencer::get_franka_state(const franka_msgs::FrankaState::ConstPtr &msg){
 
     // Saving the message
     this->latest_franka_state = *msg;
 
+    // Checking for libfranka errors
+    if(msg->robot_mode != 2 && msg->robot_mode != 5){       // The robot state is not "automatic" or "manual guiding"
+        this->franka_ok = false;
+        ROS_ERROR("Something happened to the robot!");
+    }
+
+    // Getting the tau ext
     if(DEBUG && false){
         std::cout << "The latest tau ext vector is \n [ ";
         for(auto it : this->latest_franka_state.tau_ext_hat_filtered)  std::cout << it << " ";
@@ -266,7 +274,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     }
 
     // 1) Going to home configuration
-    if(!this->panda_softhand_client.call_joint_service(this->home_joints)){
+    if(!this->panda_softhand_client.call_joint_service(this->home_joints) || !this->franka_ok){
         ROS_ERROR("Could not go to the specified home joint configuration.");
         res.success = false;
         res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
@@ -283,7 +291,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     tf::poseEigenToMsg(object_pose_aff * grasp_transform_aff, grasp_pose);
 
     // 2) Going to pregrasp pose
-    if(!this->panda_softhand_client.call_pose_service(pre_grasp_pose, false)){
+    if(!this->panda_softhand_client.call_pose_service(pre_grasp_pose, false) || !this->franka_ok){
         ROS_ERROR("Could not go to the specified pre grasp pose.");
         res.success = false;
         res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
@@ -291,7 +299,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     }
 
     // 3) Going to grasp pose
-    if(!this->panda_softhand_client.call_slerp_service(grasp_pose, false)){
+    if(!this->panda_softhand_client.call_slerp_service(grasp_pose, false) || !this->franka_ok){
         ROS_ERROR("Could not go to the specified grasp pose.");
         res.success = false;
         res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
@@ -299,7 +307,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     }
 
     // 4) Performing adaptive grasp
-    if(!this->panda_softhand_client.call_adaptive_service(true)){
+    if(!this->panda_softhand_client.call_adaptive_service(true) || !this->franka_ok){
         ROS_ERROR("Could not perform the adaptive grasp.");
         res.success = false;
         res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
@@ -307,7 +315,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     }
 
     // 5) Lift up to pregrasp pose
-    if(!this->panda_softhand_client.call_slerp_service(pre_grasp_pose, false)){
+    if(!this->panda_softhand_client.call_slerp_service(pre_grasp_pose, false) || !this->franka_ok){
         ROS_ERROR("Could not lift to the specified pose.");
         res.success = false;
         res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
@@ -315,7 +323,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     }
 
     // 6) Going to handover joint config
-    if(!this->panda_softhand_client.call_joint_service(this->handover_joints)){
+    if(!this->panda_softhand_client.call_joint_service(this->handover_joints) || !this->franka_ok){
         ROS_ERROR("Could not go to the specified handover joint config.");
         res.success = false;
         res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
@@ -327,7 +335,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     bool hand_open = false; ros::Time init_time = ros::Time::now(); ros::Time now_time;
     while(!hand_open){
         now_time = ros::Time::now();
-        usleep(50);                         // Don't know why, but the threshold works with this sleeping
+        usleep(500);                         // Don't know why, but the threshold works with this sleeping
         if(this->tau_ext_norm > this->handover_thresh){
             hand_open = true;
             if(DEBUG) ROS_WARN_STREAM("Opening condition reached!" << " SOMEONE PULLED!");
@@ -342,7 +350,7 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     }
 
     // 8) Opening hand 
-    if(!this->panda_softhand_client.call_hand_service(0.0, 2.0)){
+    if(!this->panda_softhand_client.call_hand_service(0.0, 2.0) || !this->franka_ok){
         ROS_ERROR("Could not open the hand.");
         res.success = false;
         res.message = "The service call_adaptive_grasp_task was NOT performed correctly!";
@@ -367,7 +375,7 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     }
 
     // 1) Going to home configuration
-    if(!this->panda_softhand_client.call_joint_service(this->home_joints)){
+    if(!this->panda_softhand_client.call_joint_service(this->home_joints) || !this->franka_ok){
         ROS_ERROR("Could not go to the specified home joint configuration.");
         res.success = false;
         res.message = "The service call_simple_grasp_task was NOT performed correctly!";
@@ -384,7 +392,7 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     tf::poseEigenToMsg(object_pose_aff * grasp_transform_aff, grasp_pose);
 
     // 2) Going to pregrasp pose
-    if(!this->panda_softhand_client.call_pose_service(pre_grasp_pose, false)){
+    if(!this->panda_softhand_client.call_pose_service(pre_grasp_pose, false) || !this->franka_ok){
         ROS_ERROR("Could not go to the specified pre grasp pose.");
         res.success = false;
         res.message = "The service call_simple_grasp_task was NOT performed correctly!";
@@ -392,7 +400,7 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     }
 
     // 3) Going to grasp pose
-    if(!this->panda_softhand_client.call_slerp_service(grasp_pose, false)){
+    if(!this->panda_softhand_client.call_slerp_service(grasp_pose, false) || !this->franka_ok){
         ROS_ERROR("Could not go to the specified grasp pose.");
         res.success = false;
         res.message = "The service call_simple_grasp_task was NOT performed correctly!";
@@ -400,7 +408,7 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     }
 
     // 4) Performing simple grasp
-    if(!this->panda_softhand_client.call_hand_service(1.0, 2.0)){
+    if(!this->panda_softhand_client.call_hand_service(1.0, 2.0) || !this->franka_ok){
         ROS_ERROR("Could not perform the simple grasp.");
         res.success = false;
         res.message = "The service call_simple_grasp_task was NOT performed correctly!";
@@ -408,7 +416,7 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     }
 
     // 5) Lift up to pregrasp pose
-    if(!this->panda_softhand_client.call_slerp_service(pre_grasp_pose, false)){
+    if(!this->panda_softhand_client.call_slerp_service(pre_grasp_pose, false) || !this->franka_ok){
         ROS_ERROR("Could not lift to the specified pose.");
         res.success = false;
         res.message = "The service call_simple_grasp_task was NOT performed correctly!";
@@ -416,7 +424,7 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     }
 
     // 6) Going to handover joint config
-    if(!this->panda_softhand_client.call_joint_service(this->handover_joints)){
+    if(!this->panda_softhand_client.call_joint_service(this->handover_joints) || !this->franka_ok){
         ROS_ERROR("Could not go to the specified handover joint config.");
         res.success = false;
         res.message = "The service call_simple_grasp_task was NOT performed correctly!";
@@ -428,7 +436,7 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     bool hand_open = false; ros::Time init_time = ros::Time::now(); ros::Time now_time;
     while(!hand_open){
         now_time = ros::Time::now();
-        usleep(50);                         // Don't know why, but the threshold works with this sleeping
+        usleep(500);                         // Don't know why, but the threshold works with this sleeping
         if(this->tau_ext_norm > this->handover_thresh){
             hand_open = true;
             if(DEBUG) ROS_WARN_STREAM("Opening condition reached!" << " SOMEONE PULLED!");
@@ -443,7 +451,7 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     }
 
     // 8) Opening hand 
-    if(!this->panda_softhand_client.call_hand_service(0.0, 2.0)){
+    if(!this->panda_softhand_client.call_hand_service(0.0, 2.0) || !this->franka_ok){
         ROS_ERROR("Could not open the hand.");
         res.success = false;
         res.message = "The service call_simple_grasp_task was NOT performed correctly!";
@@ -468,7 +476,7 @@ bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srv
     }
 
     // 1) Going to handshake configuration
-    if(!this->panda_softhand_client.call_joint_service(this->handshake_joints)){
+    if(!this->panda_softhand_client.call_joint_service(this->handshake_joints) || !this->franka_ok){
         ROS_ERROR("Could not go to the specified handshake joint configuration.");
         res.success = false;
         res.message = "The service call_handshake_task was NOT performed correctly!";
@@ -476,7 +484,7 @@ bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srv
     }
 
     // 2) Swithching to impedance controller
-    if(!this->switch_controllers(this->robot_name, this->pos_controller, this->imp_controller)){
+    if(!this->switch_controllers(this->robot_name, this->pos_controller, this->imp_controller) || !this->franka_ok){
         ROS_ERROR_STREAM("Could not switch to the impedance controller " 
             << this->imp_controller << " from " << this->pos_controller << ". Are these controllers loaded?");
         res.success = false;
@@ -519,7 +527,7 @@ bool TaskSequencer::call_handshake_task(std_srvs::SetBool::Request &req, std_srv
     }
 
     // 4) Swithching to position controller
-    if(!this->switch_controllers(this->robot_name, this->imp_controller, this->pos_controller)){
+    if(!this->switch_controllers(this->robot_name, this->imp_controller, this->pos_controller) || !this->franka_ok){
         ROS_ERROR_STREAM("Could not switch to the position controller " 
             << this->pos_controller << " from " << this->imp_controller << ". Are these controllers loaded?");
         res.success = false;
