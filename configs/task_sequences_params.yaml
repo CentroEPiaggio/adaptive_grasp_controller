@@ -24,7 +24,7 @@ task_sequencer:
   # The joint configuration for handover
   handover_joints: [-0.101, 0.161, 0.159, -1.651, 2.023, 2.419, -0.006]
   # The threshold on tau_ext for handover hand opening
-  handover_thresh: 6.8
+  handover_thresh: 1.0
   # The joint configuration for handshake
   handshake_joints: [0.062, 0.420, -0.362, -1.885, 1.489, 1.261, -0.031]
 
@@ -45,5 +45,6 @@ task_sequencer:
     "teddy_s" : [0.05, -0.24, 0.105, 3.131, -0.052, -0.400]
     "teddy_inc" : [0.032, 0.010, 0.143, 3.139, 0.616, 0.038]
     "teddy_thu" : [-0.024, -0.034, 0.083, 3.112, -0.446, 0.020]
-    "ball" : [-0.04, 0.025, 0.025, -3.034, -0.083, -0.107]
+    "ball" : [-0.055, 0.113, 0.07, -3.104, 0.122, -0.241]
     "two_cubes" : [-0.055, 0.113, 0.061, -3.104, 0.122, -0.241]
+    "bottle" : [0.071, 0.072, 0.063, -2.434, -0.118, 0.432]
