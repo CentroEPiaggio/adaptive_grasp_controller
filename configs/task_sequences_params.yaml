@@ -29,7 +29,7 @@ task_sequencer:
   handshake_joints: [0.062, 0.420, -0.362, -1.885, 1.489, 1.261, -0.031]
 
   # Boolean for enabling the registration of the handshake config when hanshake service is called
-  handshake_config_rec: true
+  handshake_config_rec: false
 
   # The personalized grasp pose maps for different objects
   grasp_poses_map:
@@ -37,7 +37,7 @@ task_sequencer:
     "apple_inc" : [0.042, 0.018, 0.056, 3.104, 0.418, -0.074]
     "capsicum_a" : [0.0, 0.0, 0.038, -3.1415, 0.0, 0.0]
     "capsicum_s" : [0.02, 0.0, 0.03, -3.1415, 0.0, 0.0]
-    "kettle" : [-0.029, 0.112, 0.195, -3.1415, 0.0, 0.0]
+    "kettle" : [0.066, 0.012, 0.203, -2.973, 0.620, -0.032]
     "orange" : [0.0, 0.0, 0.017, -3.1415, 0.0, 0.0]
     "sponge" : [0.023, 0.160, 0.137, 3.070, -0.721, 0.379]
     "teddy" : [-0.05, 0.0, 0.109, -3.1415, 0.0, 0.0]
@@ -46,3 +46,4 @@ task_sequencer:
     "teddy_inc" : [0.032, 0.010, 0.143, 3.139, 0.616, 0.038]
     "teddy_thu" : [-0.024, -0.034, 0.083, 3.112, -0.446, 0.020]
     "ball" : [-0.04, 0.025, 0.025, -3.034, -0.083, -0.107]
+    "two_cubes" : [-0.055, 0.113, 0.061, -3.104, 0.122, -0.241]
