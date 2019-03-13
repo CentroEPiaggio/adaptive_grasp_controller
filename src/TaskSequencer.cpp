@@ -342,13 +342,14 @@ bool TaskSequencer::call_adaptive_grasp_task(std_srvs::SetBool::Request &req, st
     // 7) Waiting for threshold or for some time
     sleep(1);       // Sleeping for a second to avoid robot stopping peaks
     bool hand_open = false; ros::Time init_time = ros::Time::now(); ros::Time now_time;
+    double base_tau_ext = this->tau_ext_norm;           // Saving the present tau for later computation of variation
     while(!hand_open){
         now_time = ros::Time::now();
         usleep(500);                         // Don't know why, but the threshold works with this sleeping
-        if(this->tau_ext_norm > this->handover_thresh){
+        if(std::abs(this->tau_ext_norm - base_tau_ext) > this->handover_thresh){
             hand_open = true;
             if(DEBUG) ROS_WARN_STREAM("Opening condition reached!" << " SOMEONE PULLED!");
-            if(DEBUG) ROS_WARN_STREAM("The tau_ext_norm is " << this->tau_ext_norm << " and the threshold is " << this->handover_thresh << ".");
+            if(DEBUG) ROS_WARN_STREAM("The tau_ext difference is " << std::abs(this->tau_ext_norm - base_tau_ext) << " and the threshold is " << this->handover_thresh << ".");
         }
         if((now_time - init_time) > ros::Duration(10, 0)){
             hand_open = true;
@@ -449,13 +450,14 @@ bool TaskSequencer::call_simple_grasp_task(std_srvs::SetBool::Request &req, std_
     // 7) Waiting for threshold or for some time
     sleep(1);       // Sleeping for a second to avoid robot stopping peaks
     bool hand_open = false; ros::Time init_time = ros::Time::now(); ros::Time now_time;
+    double base_tau_ext = this->tau_ext_norm;           // Saving the present tau for later computation of variation
     while(!hand_open){
         now_time = ros::Time::now();
         usleep(500);                         // Don't know why, but the threshold works with this sleeping
-        if(this->tau_ext_norm > this->handover_thresh){
+        if(std::abs(this->tau_ext_norm - base_tau_ext) > this->handover_thresh){
             hand_open = true;
             if(DEBUG) ROS_WARN_STREAM("Opening condition reached!" << " SOMEONE PULLED!");
-            if(DEBUG) ROS_WARN_STREAM("The tau_ext_norm is " << this->tau_ext_norm << " and the threshold is " << this->handover_thresh << ".");
+            if(DEBUG) ROS_WARN_STREAM("The tau_ext difference is " << std::abs(this->tau_ext_norm - base_tau_ext) << " and the threshold is " << this->handover_thresh << ".");
         }
         if((now_time - init_time) > ros::Duration(10, 0)){
             hand_open = true;
