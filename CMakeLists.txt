@@ -25,6 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
   visualization_msgs
   moveit_core
   franka_msgs
+  franka_control
 )
 
 add_service_files(FILES
