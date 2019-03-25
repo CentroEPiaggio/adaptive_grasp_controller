@@ -71,7 +71,7 @@
 
         <!-- Panda controllers -->
         <group if="$(arg use_gazebo)">
-            <rosparam command="load" file="$(find franka_gazebo)/config/sim_controllers.yaml" />
+            <!-- <rosparam command="load" file="$(find franka_gazebo)/config/sim_controllers.yaml" /> -->
             <node name="state_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller"/>
             <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="position_joint_trajectory_controller"/>
             <node name="controller_stopper" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="--stopped cartesian_impedance_controller_softbots_stiff_matrix"/>
@@ -127,7 +127,7 @@
             <!-- A copy of robot description -->
             <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find adaptive_grasp_controller)/robot/panda_softhand.urdf.xacro'" unless="$(arg load_gripper)" />
 
-            <rosparam command="load" file="$(find vito_description)/config/right_hand_names.yaml" />
+            <rosparam command="load" file="$(find adaptive_grasp_controller)/configs/right_hand_names.yaml" />
 
             <!-- load the hardware interface for hand in current namespace -->
             <include file="$(find soft_hand_qb_ros_control)/launch/soft_hand_qb_hw.launch"></include>
